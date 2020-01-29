@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import Rows from './Rows'
+import Rows from './Rows';
+
 const AStarPathFinder = () => {
-    const [matrixSize, setMatrixSize] = useState(25)
+    const [matrixSize, setMatrixSize] = useState(25);
     const [matrix, setMatrix] = useState(Array.from({ length: matrixSize }, () => Array.from({ length: matrixSize }, () => null))); //creates a 2d array
     const [start, setStart] = useState([4,5]);
     const [end, setEnd] = useState([11,12]);
@@ -10,7 +11,7 @@ const AStarPathFinder = () => {
     const [lastCheckedNode, setLastCheckedNode] = useState(start);
     const [allowDiagonals, setAllowDiagonals] = useState(false);
 
-    
+
 
     const handleMatrixChange = (event) => {
         
