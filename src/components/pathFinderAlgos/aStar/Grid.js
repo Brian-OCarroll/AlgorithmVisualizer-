@@ -2,7 +2,8 @@ import React from 'react';
 
 // cell class that allows for assignable properties
 class Node {
-    constructor(col, row, wall) {
+    constructor(grid, col, row, wall ) {
+        this.grid = grid;
         /**
          * The x coordinate of the node on the grid.
          * @type number
@@ -25,7 +26,88 @@ class Node {
         // Already been evaluated?
         this.visited = false;
     }
+        /**
+     * MIGHT NEED TO SWITCH X AND Y HERE
+     */
+    getNode = (x, y) => {
+        return this.nodes[y][x];
+    }
+    getNeighbors = () => {
+        if (!this.neighbors) {
+            this.populateNeighbors();
+        }
+        return this.neighbors;
+    }
 
+    getNeighboringWalls = () => {
+
+        if (!this.neighboringWalls) {
+            this.populateNeighbors();
+        }
+
+        return this.neighboringWalls;
+    }
+
+    /**
+     * NEED TO TEST THIS
+     * MAY HAVE DEFINITELY MESSED UP SYNTAX
+     */
+    populateNeighbors = () => {
+        this.neighbors = [];
+        this.neighboringWalls = []; // might use this for something
+        let i;
+        //Add Left/Up/Right/Down Moves
+        for ( i = 0; i < 4; i++) {
+            let node = this.getNode(this.x + this.LURDMoves[i][0], this.y + this.LURDMoves[i][1]);
+            if (node != null) {
+                if (!node.wall) {
+                    this.neighbors.push(node);
+                } else {
+                    this.neighboringWalls.push(node);
+                }
+            }
+        }
+
+        //Add Diagonals
+        /**
+         * GRIDX MAY NEED TO BE SWITCH WITH GRIDY
+         * DONT KNOW BETWEEN X AND Y, I AND J
+         */
+        for ( i = 0; i < 4; i++) {
+            const gridX = this.x + this.DiagonalMoves[i][0];
+            const gridY = this.y + this.DiagonalMoves[i][1];
+
+            const diagNode = this.getNode(gridX, gridY);
+
+            if (diagNode != null) {
+                if (this.allowDiagonals && !diagNode.wall) {
+                    if (!this.canPassThroughCorners) {
+                        //Check if blocked by surrounding walls
+                        var border1 = this.DiagonalBlockers[i][0];
+                        var border2 = this.DiagonalBlockers[i][1];
+                        //no need to protect against OOB as diagonal move
+                        //check ensures that blocker refs must be valid
+                        var blocker1 = this.grid[this.i + this.LURDMoves[border1][0]]
+                        [this.x + this.LURDMoves[border1][1]];
+                        var blocker2 = this.grid[this.i + this.LURDMoves[border2][0]]
+                        [this.x + this.LURDMoves[border2][1]];
+
+
+                        if (!blocker1.wall || !blocker2.wall) {
+                            //one or both are open so we can move past
+                            this.neighbors.push(diagNode);
+                        }
+                    } else {
+                        this.neighbors.push(diagNode);
+                    }
+                }
+                if (diagNode.wall) {
+                    this.neighboringWalls.push(diagNode);
+                }
+            }
+        }
+        return this.neighbors
+    }
 }
 
 export class Grid {
@@ -74,6 +156,9 @@ export class Grid {
         return this.nodes
     }
 
+    /**
+     * MIGHT NEED TO SWITCH X AND Y HERE
+     */
     getNode = (x, y) => {
         return this.nodes[y][x];
     }
@@ -102,66 +187,9 @@ export class Grid {
     setWall = (x, y) => {
         this.nodes[y][x].wall = true;
     };
-
-    /**
-     * NEED TO TEST THIS
-     */
-    populateNeighbors = function () {
-        this.neighbors = [];
-        this.neighboringWalls = [];
-        let i;
-        //Add Left/Up/Right/Down Moves
-        for ( i = 0; i < 4; i++) {
-            let node = this.getNode(this.i + this.LURDMoves[i][0], this.j + this.LURDMoves[i][1]);
-            if (node != null) {
-                if (!node.wall) {
-                    this.neighbors.push(node);
-                } else {
-                    this.neighboringWalls.push(node);
-                }
-            }
-        }
-
-        //Add Diagonals
-
-        for ( i = 0; i < 4; i++) {
-            const gridX = this.i + this.DiagonalMoves[i][0];
-            const gridY = this.j + this.DiagonalMoves[i][1];
-
-            const diagNode = this.getNode(gridX, gridY);
-
-            if (diagNode != null) {
-                if (this.allowDiagonals && !diagNode.wall) {
-                    if (!this.canPassThroughCorners) {
-                        //Check if blocked by surrounding walls
-                        var border1 = this.DiagonalBlockers[i][0];
-                        var border2 = this.DiagonalBlockers[i][1];
-                        //no need to protect against OOB as diagonal move
-                        //check ensures that blocker refs must be valid
-                        var blocker1 = this.grid[this.i + this.LURDMoves[border1][0]]
-                        [this.j + this.LURDMoves[border1][1]];
-                        var blocker2 = this.grid[this.i + this.LURDMoves[border2][0]]
-                        [this.j + this.LURDMoves[border2][1]];
-
-
-                        if (!blocker1.wall || !blocker2.wall) {
-                            //one or both are open so we can move past
-                            this.neighbors.push(diagNode);
-                        }
-                    } else {
-                        this.neighbors.push(diagNode);
-                    }
-                }
-                if (diagNode.wall) {
-                    this.neighboringWalls.push(diagNode);
-                }
-            }
-        }
-    }
+    
 
 }
-
-
 
 
 
