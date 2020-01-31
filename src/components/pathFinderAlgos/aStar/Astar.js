@@ -1,6 +1,6 @@
 import BinaryHeap from '../BinaryHeap';
-import Heuristic from '../Heuristics'
-import Util from '../Util'
+import Heuristic from '../Heuristics';
+import Util from '../Util';
 /**
  * A* path-finder. Based upon https://github.com/bgrins/javascript-astar
  * @constructor
@@ -22,7 +22,7 @@ class AStarFinder {
         this.dontCrossCorners = opt.canPassThroughCorners;
         this.heuristic = opt.heuristic || Heuristic.manhattan;
         this.weight = opt.weight || 1;
-        this.diagonalMovement = opt.diagonalMovement;
+        // this.diagonalMovement = opt.diagonalMovement;
 
         if (!this.allowDiagonals) {
             this.heuristic = opt.heuristic || Heuristic.manhattan;
@@ -33,23 +33,21 @@ class AStarFinder {
 
 
 
-
     /**
      * Find and return the the path.
      * @return {Array<Array<number>>} The path, including both start and
      *     end positions.
      */
-    findPath = function (startNode, endNode, grid) {
-        let openList = new BinaryHeap(function (nodeA, nodeB) {
-            return nodeA.f - nodeB.f;
+    findPath =  (startNode, endNode, grid) => {
+        let openList = new BinaryHeap(function (node) {
+            return node.f;
         }),
 
             heuristic = this.heuristic,
-            diagonalMovement = this.diagonalMovement,
             weight = this.weight,
             abs = Math.abs, SQRT2 = Math.SQRT2,
             node, neighbors, neighbor, i, l, x, y, ng;
-
+            
         // set the `g` and `f` value of the start node to be 0
         startNode.g = 0;
         startNode.f = 0;
@@ -59,18 +57,18 @@ class AStarFinder {
         startNode.opened = true;
 
         // while the open list is not empty
-        while (!openList.empty()) {
+        while (!(openList.size() === 0)) {
             // pop the position of node which has the minimum `f` value.
             node = openList.pop();
             node.closed = true;
-
+            console.log(node)
             // if reached the end position, construct the path and return it
             if (node === endNode) {
                 return Util.backtrace(endNode);
             }
 
             // get neigbours of the current node
-            neighbors = grid.getNeighbors(node, diagonalMovement);
+            neighbors = grid.getNeighbors(node.x, node.y);
             for (i = 0, l = neighbors.length; i < l; ++i) {
                 neighbor = neighbors[i];
 
@@ -100,10 +98,11 @@ class AStarFinder {
                         // the neighbor can be reached with smaller cost.
                         // Since its f value has been updated, we have to
                         // update its position in the open list
-                        openList.updateItem(neighbor);
+                        openList.rescoreElement(neighbor);
                     }
                 }
             } // end for each neighbor
+            console.log(openList)
         } // end while not open list empty
 
         // fail to find the path
