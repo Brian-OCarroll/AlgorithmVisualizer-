@@ -21,16 +21,11 @@ class Node {
         // Neighbors
         this.neighbors = undefined;
         this.neighboringWalls = undefined;
-        this.previous = undefined;
+        this.parent = undefined;
         // Already been evaluated?
-        this.visited = false;
+        // this.visited = false;
     }
-    /**
- * MIGHT NEED TO SWITCH X AND Y HERE
- */
-    getNode = (x, y) => {
-        return this.nodes[y][x];
-    }
+
 
 }
 
