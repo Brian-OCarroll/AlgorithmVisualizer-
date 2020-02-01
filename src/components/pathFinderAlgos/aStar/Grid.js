@@ -19,9 +19,7 @@ class Node {
          */
         this.wall = wall
         // Neighbors
-        this.neighbors = undefined;
-        this.neighboringWalls = undefined;
-        this.parent = undefined;
+
         // Already been evaluated?
         // this.visited = false;
     }

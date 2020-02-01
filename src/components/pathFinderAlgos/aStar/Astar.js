@@ -31,7 +31,9 @@ class AStarFinder {
         }
     }
 
-
+    init = () => {
+        
+    }
 
     /**
      * Find and return the the path.

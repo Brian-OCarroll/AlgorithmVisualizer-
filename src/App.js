@@ -1,18 +1,19 @@
 import React from 'react';
-import logo from './logo.svg';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
-import AStarPathFinder from './components/pathFinderAlgos/aStar/Astar';
-// import Grid from './components/pathFinderAlgos/aStar/Grid'
+import {Container} from 'react-bootstrap'
+import Navigation from './components/Nav/Navigation';
 import PathFinderContainer from './components/pathFinderAlgos/PathFinderContainer';
-// const Grid = require('./components/pathFinderAlgos/aStar/Grid')
+
 function App() {
-  // const matrix = new Grid(50, 50);
-  // matrix.setNodes()
-  // console.log(matrix)
-  // window.$log = matrix;
+
   return (
     <div className="App">
+
+      <Navigation />
+      <Container>
     <PathFinderContainer />
+    </Container>
     </div>
   );
 }
