@@ -18,10 +18,7 @@ class Node {
          * @type boolean
          */
         this.wall = wall
-        // Neighbors
-
-        // Already been evaluated?
-        // this.visited = false;
+        
     }
 
 
