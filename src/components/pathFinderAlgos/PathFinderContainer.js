@@ -7,7 +7,18 @@ import AStarFinder from './aStar/Astar';
 const PathFinderContainer = () => {
     let initialGrid = new Grid(16, 16);
     initialGrid.setNodes(); // create 2d array
-
+    let algos = ["A*", "Depth First"]
+    const algoSelections = [
+        {
+            heuristics: ["Manhattan", "Euclidean", "Octile", "Chebyshev"],
+            options: ["Allow Diagonal", "Don't Cross Corners"]
+        },
+        {
+            heuristics: ["Manhattan", "Euclidean", "Octile", "Chebyshev"],
+            options: ["Allow Diagonal", "Don't Cross Corners"]
+        }
+    ]
+    const [selectAlgoIndex, setSelectAlgoIndex] = useState(0)
 
 
     // const [matrixSize, setMatrixSize] = useState(25);
@@ -22,7 +33,11 @@ const PathFinderContainer = () => {
     const [closedSet, setClosedSet] = useState([]);
     const [lastCheckedNode, setLastCheckedNode] = useState(startNode);
     const [allowDiagonals, setAllowDiagonals] = useState(false);
-    const [mouseActive, setMouseActive] = useState(false)
+    const [mouseActive, setMouseActive] = useState(false);
+
+    startNode.isStart = true;
+    startNode.isEnd = true;
+
     let finder = new AStarFinder();
     let path = finder.findPath(startNode, endNode, initialGrid)
     console.log(JSON.stringify(path))
@@ -43,17 +58,18 @@ const PathFinderContainer = () => {
 
     // };
 
-
+    
 
     let cellSize = 30;
     return (
 
+       
         <Container>
-            <Row >
-                <Col md={4}>
-                    <Controls />
-                </Col>
-            </Row>
+             <Controls  algorithms={algos} algoSelections={algoSelections}/>
+            {/* <Row >
+                
+                
+            </Row> */}
             <svg className={mouseActive ? 'mouseActive' : ''} width={(grid.width * cellSize) + 1} height={(grid.height * cellSize) + 1}>
                 {
                     grid.nodes.map((rows, rowIndex) => {
