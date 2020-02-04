@@ -1,28 +1,10 @@
 import React from 'react';
+import Node from './Node'
 
-// cell class that allows for assignable properties
-class Node {
-    constructor(col, row, wall) {
-        /**
-         * The x coordinate of the node on the grid.
-         * @type number
-         */
-        this.x = col;
-        /**
-         * The y coordinate of the node on the grid.
-         * @type number
-         */
-        this.y = row;
-        /**
-         * Whether this node can be walked through.
-         * @type boolean
-         */
-        this.wall = wall
-        
-    }
-
-
-}
+const START_NODE_ROW = 10;
+const START_NODE_COL = 15;
+const FINISH_NODE_ROW = 5;
+const FINISH_NODE_COL = 5;
 
 export default class Grid {
     constructor(width, height) {
@@ -56,18 +38,29 @@ export default class Grid {
     /**
      * Build and return the nodes.
      * @private
-     * @param {number} width
-     * @param {number} height
      * @see Grid
      */
     setNodes = () => {
         for (let i = 0; i < this.height; ++i) {
             this.nodes[i] = new Array(this.width); //set columns
             for (let j = 0; j < this.width; ++j) {
-                this.nodes[i][j] = new Node(j, i); // pass in width and height
+                this.nodes[i][j] = this.createNode(j, i); // pass in width and height
             }
         }
         return this.nodes
+    }
+
+    createNode = (x, y) => {
+        return {
+            x, //the column
+            y, //the row
+            isStart: y === START_NODE_ROW && x === START_NODE_COL,
+            isEnd: y === FINISH_NODE_ROW && x === FINISH_NODE_COL,
+            distance: Infinity,
+            isVisited: false,
+            isWall: false,
+            previousNode: null,
+        }
     }
 
     /**
@@ -76,6 +69,8 @@ export default class Grid {
     getNode = (x, y) => {
         return this.nodes[y][x];
     }
+
+
 
     isInsideGrid = (x, y) => {
         return (x >= 0 && x < this.width) && (y >= 0 && y < this.height);
@@ -99,18 +94,18 @@ export default class Grid {
      * @param {boolean} walkable - Whether the position is walkable.
      */
     setWall = (x, y) => {
-        this.nodes[y][x].wall = true;
+        this.nodes[y][x].wall = !this.nodes[y][x].wall;
     };
-    getNeighbors = ( x, y ) => {
-        const node = this.getNode( x, y );
+    getNeighbors = (x, y) => {
+        const node = this.getNode(x, y);
         if (!node.neighbors) {
             this.populateNeighbors(node);
         }
         return node.neighbors;
     }
 
-    getNeighboringWalls = ( x, y ) => {
-        const node = this.getNode(x,y);
+    getNeighboringWalls = (x, y) => {
+        const node = this.getNode(x, y);
         if (!node.neighboringWalls) {
             this.populateNeighbors(node);
         }
@@ -178,7 +173,25 @@ export default class Grid {
         }
         return startNode.neighbors
     }
+    /**
+ * Get a clone of this grid.
+ * @return {Grid} Cloned grid.
+ */
+clone = () => {
+    var i, j,
 
+        width = this.width,
+        height = this.height,
+        dupNodes = {...this.nodes},
+
+        newGrid = new Grid(width, height)
+        
+        newGrid.nodes = dupNodes
+
+    // newGrid.nodes = newNodes;
+
+    return newGrid;
+};
 }
 
 

@@ -63,7 +63,7 @@ class AStarFinder {
             // pop the position of node which has the minimum `f` value.
             node = openList.pop();
             node.closed = true;
-            console.log(node)
+            
             // if reached the end position, construct the path and return it
             if (node === endNode) {
                 return Util.backtrace(endNode);
