@@ -1,27 +1,6 @@
 import React from 'react'
 import './Node.css'
-// cell class that allows for assignable properties
-// class Node {
-//     constructor(col, row, wall) {
-//         /**
-//          * The x coordinate of the node on the grid.
-//          * @type number
-//          */
-//         this.x = col;
-//         /**
-//          * The y coordinate of the node on the grid.
-//          * @type number
-//          */
-//         this.y = row;
-//         /**
-//          * Whether this node can be walked through.
-//          * @type boolean
-//          */
-//         this.wall = wall || false
 
-//     }
-
-// }
 class Node extends React.Component {
     render() {
         const {
@@ -29,26 +8,49 @@ class Node extends React.Component {
             isEnd,
             isStart,
             isWall,
+            active,
             MouseDown,
             MouseEnter,
             MouseUp,
             y,
+            nodeSize,
+            gridWidth,
+            gridHeight,
         } = this.props;
-        const extraClassName = isEnd
-            ? 'node-finish'
-            : isStart
-                ? 'node-start'
-                : isWall
-                    ? 'node-wall'
-                    : '';
 
+        this.x = ((x % gridWidth) * nodeSize) + 1; //get grid placement y-axis
+        this.y = (Math.floor(y % gridHeight) * nodeSize) + 1 //get grid placement x-axis
+        const extraClassName =
+            isEnd && active
+                ? 'node-finish--active'
+                : isStart && active
+                    ? 'node-start--active'
+                    :
+                    isEnd
+                        ? 'node-finish'
+                        : isStart
+                            ? 'node-start'
+                            : isWall
+                                ? 'node-wall'
+                                : '';
+        
         return (
-            <div
+            <g
                 id={`node-${y}-${x}`}
-                className={`node ${extraClassName}`}
+                // className={`node ${extraClassName} ${activeClassName}`}
                 onMouseDown={(e) => MouseDown(x, y, e)}
                 onMouseEnter={(e) => MouseEnter(x, y, e)}
-                onMouseUp={(e) => MouseUp(x, y, e)}></div>
+                onMouseUp={(e) => MouseUp(x, y, e)}>
+
+                <rect
+                    id={`node-${y}-${x}`}
+                    className={`node ${extraClassName} `}
+                    x={this.x}
+                    y={this.y}
+                    width={nodeSize - 1}
+                    height={nodeSize - 1}
+                />
+            </g>
         );
     }
 }

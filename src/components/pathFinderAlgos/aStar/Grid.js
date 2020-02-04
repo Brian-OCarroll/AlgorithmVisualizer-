@@ -52,6 +52,7 @@ export default class Grid {
             y, //the row
             isStart: false,
             isEnd: false,
+            active: false,
             distance: Infinity,
             isVisited: false,
             isWall: false,
@@ -87,10 +88,10 @@ export default class Grid {
      * NOTE: throws exception if the coordinate is not inside the grid.
      * @param {number} x - The x coordinate of the node.
      * @param {number} y - The y coordinate of the node.
-     * @param {boolean} walkable - Whether the position is walkable.
+
      */
     setWall = (x, y) => {
-        this.nodes[y][x].wall = !this.nodes[y][x].wall;
+        this.nodes[y][x].isWall = !this.nodes[y][x].isWall;
     };
     getNeighbors = (x, y) => {
         const node = this.getNode(x, y);

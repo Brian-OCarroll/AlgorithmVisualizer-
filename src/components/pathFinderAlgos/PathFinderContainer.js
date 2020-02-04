@@ -10,7 +10,9 @@ class PathFinderContainer extends React.Component {
     constructor() {
         super()
         this.grid = getInitialGrid();
-
+        this.nodeSize = 30;
+        // this.grid.getNode(4, 5).isStart = true
+        // this.grid.getNode(11, 11).isEnd = true
         this.state = {
             algo: [],
             grid: this.grid,
@@ -18,7 +20,7 @@ class PathFinderContainer extends React.Component {
             endCoords: [11,11],
             mouseIsPressed: false
         }
-        this.mouseAction = null
+
         this.algos = ["A*", "Depth First"];
         this.algoSelections = [
             {
@@ -29,7 +31,8 @@ class PathFinderContainer extends React.Component {
                 heuristics: ["Manhattan", "Euclidean", "Octile", "Chebyshev"],
                 options: ["Allow Diagonal", "Don't Cross Corners"]
             }
-        ]
+        ];
+        this.mouseAction = null;
         this.mouseEvent = this.mouseEvent.bind(this)
     }
     componentDidMount() {
@@ -39,29 +42,36 @@ class PathFinderContainer extends React.Component {
             grid: this.grid
         })
     }
+    reset = () => {
+        this.setState({
+
+            grid: this.grid,
+          });
+    }
     updateStart(x, y) {
+
         this.grid.getNode(this.state.startCoords[0], this.state.startCoords[1]).isStart = false;
+      
         this.setState({
             startCoords: [x, y]
         })
-        this.grid.getNode(this.state.startCoords[0], this.state.startCoords[1]).isStart = true;
+        this.grid.getNode(x, y).isStart = true;
     }
     updateEnd(x, y) {
         this.grid.getNode(this.state.endCoords[0], this.state.endCoords[1]).isEnd = false;
         this.setState({
             endCoords: [x, y]
         })
-        this.grid.getNode(this.state.endCoords[0], this.state.endCoords[1]).isEnd = true;
+        this.grid.getNode(x, y).isEnd = true;
     }
     mouseEvent = (x, y, evt) => {
       
         if (evt.type === 'mouseup') {
-            console.log('mouseip')
+            
             this.mouseAction = null;
 
             this.grid.getNode(x, y).active = false
-            console.log('noramal', this.grid)
-            console.log('state', this.state.grid)
+
             this.setState({
                 grid: this.grid
             })
@@ -77,75 +87,79 @@ class PathFinderContainer extends React.Component {
         if (this.mouseAction == null) {
             if (this.grid.getNode(x, y).isStart) {
                 this.mouseAction = function (x, y) {
-                    console.log('start', x, y);
+                   
                     this.updateStart(x, y);
 
                 }
             } else if (this.grid.getNode(x, y).isEnd) {
                 this.mouseAction = function (x, y) {
-                    console.log('end', x, y);
+                    
+                    this.updateEnd(x,y)
                     // this.grid.removeAll('goalPosition');
                     //   this.grid.cells[cellIndex].setProperty({ 'goalPosition': true });
                 };
             } else if (this.grid.getNode(x, y).isWall) {
 
                 this.mouseAction = function (x, y) {
-                    console.log('wall', x, y);
+                    
                     this.grid.setWall(x, y);
                     //   this.grid.cells[cellIndex].removeProperty(['wall']);
                 };
             } else {
                 this.mouseAction = function (x, y) {
                     this.grid.setWall(x, y);
-                    console.log('not wall', x, y);
-                    //   this.grid.cells[cellIndex].setProperty({ 'wall': true });
+                    
+                   
                 };
             }
         }
-
-        // this.grid.cells[cellIndex].setProperty({ 'active': true });
+        this.grid.getNode(x, y).active = true
+      
         this.mouseAction(x, y);
-        // this.reset();
+        this.reset();
     }
 
 
     render() {
         return (
-            <Container>
+            
+            // <Container>
+            <>
                 <Controls algorithms={this.algos} algoSelections={this.algoSelections} />
-                <div className="grid">
+                <svg className={ this.state.mouseActive ? 'mouseActive' : '' } width={(this.state.grid.width*this.nodeSize)+1} height={(this.state.grid.height*this.nodeSize)+1}>
                     {this.state.grid.nodes.map((row, rowIdx) => {
                         return (
-                            <div key={rowIdx}>
-                                {row.map((node, nodeIdx) => {
-                                    const { y, x, isEnd, isStart, isWall } = node;
+                            
+                                row.map((node, nodeIdx) => {
+                                    const { y, x, isEnd, isStart, isWall, active } = node;
                                     return (
                                         <Node
                                             key={nodeIdx}
                                             x={x}
+                                            y={y}
                                             isEnd={isEnd}
                                             isStart={isStart}
                                             isWall={isWall}
-                                            // mouseIsPressed={mouseIsPressed}
-                                            // onMouseDown={(x, y) => mouseEvent(x, y)}
-                                            // onMouseEnter={(x, y) =>
-                                            //     mouseEvent(x, y)
-                                            // }
-                                            // onMouseUp={() => mouseEvent()}
+                                            active={active}
+                                            nodeSize = {this.nodeSize}
+                                            gridWidth = {this.state.grid.width}
+                                            gridHeight = {this.state.grid.height}
+          
                                             MouseDown={this.mouseEvent}
                                             MouseEnter={
                                                 this.mouseEvent
                                             }
                                             MouseUp={this.mouseEvent}
-                                            y={y}
+                                            
                                         ></Node>
                                     );
-                                })}
-                            </div>
+                                })
+                            
                         );
                     })}
-                </div>
-            </Container>
+                </svg>
+                </>
+            // </Container>
         );
     }
 

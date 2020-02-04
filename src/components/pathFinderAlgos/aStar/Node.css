@@ -1,18 +1,37 @@
-.node {
+/* .node {
     width: 25px;
     height: 25px;
     outline: 1px solid rgb(73, 139, 190);
     display: inline-block;
+  } */
+  svg{
+    border:2px solid #ccc;
+    -ms-user-select: none;
+    user-select: none;
   }
-  
+  svg:hover{
+    cursor:default;
+  }
+  rect{
+    fill:rgb(116, 114, 156);
+  }
   .node-finish {
-    background-color: red;
+    fill: red;
   }
   
   .node-start {
-    background-color: green;
+    fill: green;
   }
-  
+  .node-finish:hover,
+  .node-start:hover {
+      cursor: pointer;
+  }
+  .node-start--active {
+    fill: rgb(17, 56, 17);
+  }
+  .node-finish--active {
+    fill: rgb(134, 34, 34);
+  }
   .node-visited {
     animation-name: visitedAnimation;
     animation-duration: 1.5s;
@@ -47,7 +66,7 @@
   }
   
   .node-wall {
-    background-color: rgb(12, 53, 71);
+    fill: rgb(12, 53, 71);
   }
   
   .node-shortest-path {
