@@ -1,10 +1,6 @@
 import React from 'react';
 import Node from './Node'
 
-const START_NODE_ROW = 10;
-const START_NODE_COL = 15;
-const FINISH_NODE_ROW = 5;
-const FINISH_NODE_COL = 5;
 
 export default class Grid {
     constructor(width, height) {
@@ -54,8 +50,8 @@ export default class Grid {
         return {
             x, //the column
             y, //the row
-            isStart: y === START_NODE_ROW && x === START_NODE_COL,
-            isEnd: y === FINISH_NODE_ROW && x === FINISH_NODE_COL,
+            isStart: false,
+            isEnd: false,
             distance: Infinity,
             isVisited: false,
             isWall: false,
@@ -192,7 +188,7 @@ clone = () => {
 
     return newGrid;
 };
-}
+} 
 
 
 

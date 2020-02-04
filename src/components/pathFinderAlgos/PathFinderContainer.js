@@ -1,146 +1,154 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Controls from '../pathFinderAlgos/Controls';
 import { Container, Row, Col } from 'react-bootstrap';
 import Grid from './aStar/Grid';
 import Node from './aStar/Node';
 import AStarFinder from './aStar/Astar';
 
-const PathFinderContainer = () => {
-    // let initialGrid = new Grid(16, 16);
-    // initialGrid.setNodes(); // create 2d array
-    let algos = ["A*", "Depth First"]
-    const algoSelections = [
-        {
-            heuristics: ["Manhattan", "Euclidean", "Octile", "Chebyshev"],
-            options: ["Allow Diagonal", "Don't Cross Corners"]
-        },
-        {
-            heuristics: ["Manhattan", "Euclidean", "Octile", "Chebyshev"],
-            options: ["Allow Diagonal", "Don't Cross Corners"]
+class PathFinderContainer extends React.Component {
+
+    constructor() {
+        super()
+        this.grid = getInitialGrid();
+
+        this.state = {
+            algo: [],
+            grid: this.grid,
+            startCoords: [2,4],
+            endCoords: [11,11],
+            mouseIsPressed: false
         }
-    ]
-    const [selectAlgoIndex, setSelectAlgoIndex] = useState(0)
-
-
-    const setup = getInitialGrid();
-    const [grid, setGrid] = useState(setup);
-    
-    const [mouseIsPressed, setMouseIsPressed] = useState(false);
-
-    // const [startNode, setStartNode] = useState(grid.getNode(11, 9));
-
-    // const [endNode, setEndNode] = useState(grid.getNode(3, 4));
-    // const [openSet, setOpenSet] = useState([startNode]);
-    // const [closedSet, setClosedSet] = useState([]);
-    // const [lastCheckedNode, setLastCheckedNode] = useState(startNode);
-    const [allowDiagonals, setAllowDiagonals] = useState(false);
-
-    //set the state to a new grid class
-    // useEffect(() => {
-    //     const grid = getInitialGrid();
-    //     setGrid(grid.nodes)
-    // }, []);
-
-    // const [mouseFunction, setMouseFunction] = useState(null);
-    let mouseAction;
-
-    // startNode.isStart = true;
-    // startNode.isEnd = true;
-
-    // let finder = new AStarFinder();
-    // let path = finder.findPath(startNode, endNode, initialGrid)
-
-    const mouseEvent = (x, y, evt) => {
-        const gridClone = grid.clone();
+        this.mouseAction = null
+        this.algos = ["A*", "Depth First"];
+        this.algoSelections = [
+            {
+                heuristics: ["Manhattan", "Euclidean", "Octile", "Chebyshev"],
+                options: ["Allow Diagonal", "Don't Cross Corners"]
+            },
+            {
+                heuristics: ["Manhattan", "Euclidean", "Octile", "Chebyshev"],
+                options: ["Allow Diagonal", "Don't Cross Corners"]
+            }
+        ]
+        this.mouseEvent = this.mouseEvent.bind(this)
+    }
+    componentDidMount() {
+        this.grid.getNode(this.state.startCoords[0], this.state.startCoords[1]).isStart = true
+        this.grid.getNode(this.state.endCoords[0], this.state.endCoords[1]).isEnd = true
+        this.setState({
+            grid: this.grid
+        })
+    }
+    updateStart(x, y) {
+        this.grid.getNode(this.state.startCoords[0], this.state.startCoords[1]).isStart = false;
+        this.setState({
+            startCoords: [x, y]
+        })
+        this.grid.getNode(this.state.startCoords[0], this.state.startCoords[1]).isStart = true;
+    }
+    updateEnd(x, y) {
+        this.grid.getNode(this.state.endCoords[0], this.state.endCoords[1]).isEnd = false;
+        this.setState({
+            endCoords: [x, y]
+        })
+        this.grid.getNode(this.state.endCoords[0], this.state.endCoords[1]).isEnd = true;
+    }
+    mouseEvent = (x, y, evt) => {
+      
         if (evt.type === 'mouseup') {
-          
-          mouseAction = null;
+            console.log('mouseip')
+            this.mouseAction = null;
 
-          gridClone.getNode(x,y).active = false
-          setGrid(gridClone)
-          return;
+            this.grid.getNode(x, y).active = false
+            console.log('noramal', this.grid)
+            console.log('state', this.state.grid)
+            this.setState({
+                grid: this.grid
+            })
+            return;
         }
-    
+
         // Ignore mouseover's without mousedown
         if (evt.buttons !== 1 && evt.type !== 'click') {
-          mouseAction = null;
-          return;
+            this.mouseAction = null;
+            return;
         }
-    
-        if (mouseAction == null) {
-          if (gridClone.getNode(x, y).isStart) {
-            mouseAction = function(x, y) {
-                this.console.log('start', x,y)
-            //   this.grid.removeAll('startPosition');
-            //   this.grid.cells[cellIndex].setProperty({ 'startPosition': true });
+
+        if (this.mouseAction == null) {
+            if (this.grid.getNode(x, y).isStart) {
+                this.mouseAction = function (x, y) {
+                    console.log('start', x, y);
+                    this.updateStart(x, y);
+
+                }
+            } else if (this.grid.getNode(x, y).isEnd) {
+                this.mouseAction = function (x, y) {
+                    console.log('end', x, y);
+                    // this.grid.removeAll('goalPosition');
+                    //   this.grid.cells[cellIndex].setProperty({ 'goalPosition': true });
+                };
+            } else if (this.grid.getNode(x, y).isWall) {
+
+                this.mouseAction = function (x, y) {
+                    console.log('wall', x, y);
+                    this.grid.setWall(x, y);
+                    //   this.grid.cells[cellIndex].removeProperty(['wall']);
+                };
+            } else {
+                this.mouseAction = function (x, y) {
+                    this.grid.setWall(x, y);
+                    console.log('not wall', x, y);
+                    //   this.grid.cells[cellIndex].setProperty({ 'wall': true });
+                };
             }
-          } else if (gridClone.getNode(x, y).isEnd) {
-            mouseAction = function (x, y) {
-                this.console.log('end', x,y);
-                // this.grid.removeAll('goalPosition');
-            //   this.grid.cells[cellIndex].setProperty({ 'goalPosition': true });
-            };
-          } else if (gridClone.getNode(x, y).isWall) {
-            
-            mouseAction = function(x, y) {
-                this.console.log('end', x,y);
-                gridClone.setWall(x, y);
-            //   this.grid.cells[cellIndex].removeProperty(['wall']);
-            };
-          } else {
-            mouseAction = function(x, y) {
-                gridClone.setWall(x, y);
-                console.log('end', x,y);
-            //   this.grid.cells[cellIndex].setProperty({ 'wall': true });
-            };
-          }
         }
-    
+
         // this.grid.cells[cellIndex].setProperty({ 'active': true });
-        // this.mouseAction(cellIndex);
+        this.mouseAction(x, y);
         // this.reset();
-      }
+    }
 
 
-    let cellSize = 30;
-    console.log(grid)
-    return (
-        <Container>
-            <Controls algorithms={algos} algoSelections={algoSelections} />
-            <div className="grid">
-                {grid.nodes.map((row, rowIdx) => {
-                    return (
-                        <div key={rowIdx}>
-                            {row.map((node, nodeIdx) => {
-                                const { y, x, isEnd, isStart, isWall } = node;
-                                return (
-                                    <Node
-                                        key={nodeIdx}
-                                        x={x}
-                                        isEnd={isEnd}
-                                        isStart={isStart}
-                                        isWall={isWall}
-                                        // mouseIsPressed={mouseIsPressed}
-                                        // onMouseDown={(x, y) => mouseEvent(x, y)}
-                                        // onMouseEnter={(x, y) =>
-                                        //     mouseEvent(x, y)
-                                        // }
-                                        // onMouseUp={() => mouseEvent()}
-                                        onMouseDown={mouseEvent}
-                                        onMouseEnter={
-                                            MouseEvent
-                                        }
-                                        onMouseUp={ mouseEvent}
-                                        y={y}
+    render() {
+        return (
+            <Container>
+                <Controls algorithms={this.algos} algoSelections={this.algoSelections} />
+                <div className="grid">
+                    {this.state.grid.nodes.map((row, rowIdx) => {
+                        return (
+                            <div key={rowIdx}>
+                                {row.map((node, nodeIdx) => {
+                                    const { y, x, isEnd, isStart, isWall } = node;
+                                    return (
+                                        <Node
+                                            key={nodeIdx}
+                                            x={x}
+                                            isEnd={isEnd}
+                                            isStart={isStart}
+                                            isWall={isWall}
+                                            // mouseIsPressed={mouseIsPressed}
+                                            // onMouseDown={(x, y) => mouseEvent(x, y)}
+                                            // onMouseEnter={(x, y) =>
+                                            //     mouseEvent(x, y)
+                                            // }
+                                            // onMouseUp={() => mouseEvent()}
+                                            MouseDown={this.mouseEvent}
+                                            MouseEnter={
+                                                this.mouseEvent
+                                            }
+                                            MouseUp={this.mouseEvent}
+                                            y={y}
                                         ></Node>
-                                );
-                            })}
-                        </div>
-                    );
-                })}
-            </div>
-        </Container>
-    );
+                                    );
+                                })}
+                            </div>
+                        );
+                    })}
+                </div>
+            </Container>
+        );
+    }
+
 }
 /**
  * Build and return the grid with only start and end assigned
@@ -156,10 +164,11 @@ const getNewGridWithWallToggled = (grid, row, col) => {
     const newGrid = grid.slice();
     const node = newGrid[row][col];
     const newNode = {
-      ...node,
-      isWall: !node.isWall,
+        ...node,
+        isWall: !node.isWall,
     };
     newGrid[row][col] = newNode;
     return newGrid;
-  };
+};
 export default PathFinderContainer
+

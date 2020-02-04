@@ -29,9 +29,9 @@ class Node extends React.Component {
             isEnd,
             isStart,
             isWall,
-            onMouseDown,
-            onMouseEnter,
-            onMouseUp,
+            MouseDown,
+            MouseEnter,
+            MouseUp,
             y,
         } = this.props;
         const extraClassName = isEnd
@@ -46,9 +46,9 @@ class Node extends React.Component {
             <div
                 id={`node-${y}-${x}`}
                 className={`node ${extraClassName}`}
-                onMouseDown={(e) => onMouseDown(x, y)}
-                onMouseEnter={(e) => onMouseEnter(x, y)}
-                onMouseUp={(e) =>onMouseUp(x, y)}></div>
+                onMouseDown={(e) => MouseDown(x, y, e)}
+                onMouseEnter={(e) => MouseEnter(x, y, e)}
+                onMouseUp={(e) => MouseUp(x, y, e)}></div>
         );
     }
 }
