@@ -43,7 +43,7 @@ class PathFinderContainer extends React.Component {
     }
 
     runAlgo = () => {
-        const {startCoords, endCoords, algo, heuristic, options, allowDiagonals, dontCrossCorners} = this.state;
+        const {startCoords, endCoords, algo, heuristic, allowDiagonals, dontCrossCorners} = this.state;
         switch(algo) {
             case 'A*':
 
@@ -52,7 +52,7 @@ class PathFinderContainer extends React.Component {
                 allowDiagonals: allowDiagonals,
                 dontCrossCorners: dontCrossCorners
               }
-              let finder = new AStarFinder()
+              let finder = new AStarFinder(opts)
               let startNode = this.grid.getNode(startCoords[0], startCoords[1]);
               let endNode = this.grid.getNode(endCoords[0], endCoords[1]);
               finder.findPath(startNode, endNode, this.grid);
