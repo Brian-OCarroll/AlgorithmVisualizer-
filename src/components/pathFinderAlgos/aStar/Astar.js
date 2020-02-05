@@ -9,7 +9,6 @@ import Util from '../Util';
  *     Deprecated, use diagonalMovement instead.
  * @param {boolean} opt.dontCrossCorners Disallow diagonal movement touching 
  *     block corners. Deprecated, use diagonalMovement instead.
- * @param {DiagonalMovement} opt.diagonalMovement Allowed diagonal movement.
  * @param {function} opt.heuristic Heuristic function to estimate the distance
  *     (defaults to manhattan).
  * @param {number} opt.weight Weight to apply to the heuristic to allow for
@@ -104,7 +103,7 @@ class AStarFinder {
                     }
                 }
             } // end for each neighbor
-            console.log(openList)
+            
         } // end while not open list empty
 
         // fail to find the path

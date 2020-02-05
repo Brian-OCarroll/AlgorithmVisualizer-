@@ -4,23 +4,15 @@ import { Container, Row, Col } from 'react-bootstrap';
 import Grid from './aStar/Grid';
 import Node from './aStar/Node';
 import AStarFinder from './aStar/Astar';
-
+import Heuristic from './Heuristics'
 class PathFinderContainer extends React.Component {
 
     constructor() {
         super()
         this.grid = getInitialGrid();
         this.nodeSize = 30;
-        // this.grid.getNode(4, 5).isStart = true
-        // this.grid.getNode(11, 11).isEnd = true
-        this.state = {
-            algo: [],
-            grid: this.grid,
-            startCoords: [2,4],
-            endCoords: [11,11],
-            mouseIsPressed: false
-        }
-
+        this.grid.getNode(2, 4).isStart = true
+        this.grid.getNode(11, 11).isEnd = true
         this.algos = ["A*", "Depth First"];
         this.algoSelections = [
             {
@@ -32,38 +24,89 @@ class PathFinderContainer extends React.Component {
                 options: ["Allow Diagonal", "Don't Cross Corners"]
             }
         ];
+
+        this.state = {
+            algo: "A*",
+            heuristic: "Manhattan",
+            options: ["Allow Diagonal", "Don't Cross Corners"],
+            grid: this.grid,
+            startCoords: [2,4],
+            endCoords: [11,11],
+            allowDiagonals: true,
+            dontCrossCorners: true,
+            mouseIsPressed: false
+        }
+
+
         this.mouseAction = null;
         this.mouseEvent = this.mouseEvent.bind(this)
     }
-    componentDidMount() {
-        this.grid.getNode(this.state.startCoords[0], this.state.startCoords[1]).isStart = true
-        this.grid.getNode(this.state.endCoords[0], this.state.endCoords[1]).isEnd = true
-        this.setState({
-            grid: this.grid
-        })
+
+    runAlgo = () => {
+        const {startCoords, endCoords, algo, heuristic, options, allowDiagonals, dontCrossCorners} = this.state;
+        switch(algo) {
+            case 'A*':
+
+              let opts = {
+                heuristic: Heuristic[heuristic.toLowerCase()],
+                allowDiagonals: allowDiagonals,
+                dontCrossCorners: dontCrossCorners
+              }
+              let finder = new AStarFinder()
+              let startNode = this.grid.getNode(startCoords[0], startCoords[1]);
+              let endNode = this.grid.getNode(endCoords[0], endCoords[1]);
+              finder.findPath(startNode, endNode, this.grid);
+              this.setState({
+                  grid: this.grid
+              })
+              break;
+
+            case 'Best First Search':
+              // code block
+              break;
+            default:
+              // code block
+          }
     }
     reset = () => {
         this.setState({
-
             grid: this.grid,
           });
     }
-    updateStart(x, y) {
 
-        this.grid.getNode(this.state.startCoords[0], this.state.startCoords[1]).isStart = false;
+    /**
+     * Updates the starting node to a new location
+     * Returns nothing
+     * @param {Number} x - column number of grid
+     * @param {Number} y - row number of grid
+     * see @Grid
+     */
+    updateStart(x, y) {
+        const {startCoords} = this.state
+        this.grid.getNode(startCoords[0], startCoords[1]).isStart = false;
       
         this.setState({
             startCoords: [x, y]
         })
         this.grid.getNode(x, y).isStart = true;
     }
+
+    /**
+     * Updates the starting node to a new location
+     * Returns nothing
+     * @param {Number} x - column number of grid
+     * @param {Number} y - row number of grid
+     * see @Grid
+     */
     updateEnd(x, y) {
-        this.grid.getNode(this.state.endCoords[0], this.state.endCoords[1]).isEnd = false;
+        const {endCoords} = this.state
+        this.grid.getNode(endCoords[0], endCoords[1]).isEnd = false;
         this.setState({
             endCoords: [x, y]
         })
         this.grid.getNode(x, y).isEnd = true;
     }
+
     mouseEvent = (x, y, evt) => {
       
         if (evt.type === 'mouseup') {
@@ -94,22 +137,18 @@ class PathFinderContainer extends React.Component {
             } else if (this.grid.getNode(x, y).isEnd) {
                 this.mouseAction = function (x, y) {
                     
-                    this.updateEnd(x,y)
-                    // this.grid.removeAll('goalPosition');
-                    //   this.grid.cells[cellIndex].setProperty({ 'goalPosition': true });
+                    this.updateEnd(x,y);
                 };
             } else if (this.grid.getNode(x, y).isWall) {
 
                 this.mouseAction = function (x, y) {
                     
-                    this.grid.setWall(x, y);
+                    this.grid.removeWall(x, y);
                     //   this.grid.cells[cellIndex].removeProperty(['wall']);
                 };
             } else {
                 this.mouseAction = function (x, y) {
                     this.grid.setWall(x, y);
-                    
-                   
                 };
             }
         }
@@ -121,6 +160,11 @@ class PathFinderContainer extends React.Component {
 
 
     render() {
+    //     const finder = new AStarFinder();
+    //   let begin = this.state.grid.getNode(this.state.startCoords[0], this.state.startCoords[1]);
+    //    let end =  this.state.grid.getNode(this.state.endCoords[0], this.state.endCoords[1]);
+    //     let path = finder.findPath(begin, end, this.state.grid);
+    //     console.log(JSON.stringify(path))
         return (
             
             // <Container>

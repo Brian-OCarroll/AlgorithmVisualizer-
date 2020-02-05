@@ -91,7 +91,17 @@ export default class Grid {
 
      */
     setWall = (x, y) => {
-        this.nodes[y][x].isWall = !this.nodes[y][x].isWall;
+        this.nodes[y][x].isWall = true;
+    };
+        /**
+     * Sets the position to be unwalkable.
+     * NOTE: throws exception if the coordinate is not inside the grid.
+     * @param {number} x - The x coordinate of the node.
+     * @param {number} y - The y coordinate of the node.
+
+     */
+    removeWall = (x, y) => {
+        this.nodes[y][x].isWall = false;
     };
     getNeighbors = (x, y) => {
         const node = this.getNode(x, y);

@@ -16,6 +16,8 @@ class Node extends React.Component {
             nodeSize,
             gridWidth,
             gridHeight,
+            visited,
+            path
         } = this.props;
 
         this.x = ((x % gridWidth) * nodeSize) + 1; //get grid placement y-axis
@@ -33,7 +35,9 @@ class Node extends React.Component {
                             : isWall
                                 ? 'node-wall'
                                 : '';
-        
+
+        //might need to get rid of this if doesn't work
+        const pathClassName = visited ? 'node-visited' : path ? 'node-path' : '';
         return (
             <g
                 id={`node-${y}-${x}`}
@@ -44,7 +48,7 @@ class Node extends React.Component {
 
                 <rect
                     id={`node-${y}-${x}`}
-                    className={`node ${extraClassName} `}
+                    className={`node ${extraClassName} ${pathClassName} `}
                     x={this.x}
                     y={this.y}
                     width={nodeSize - 1}
