@@ -16,7 +16,8 @@ class Node extends React.Component {
             nodeSize,
             gridWidth,
             gridHeight,
-            visited,
+            opened,
+            closed,
             path
         } = this.props;
 
@@ -37,7 +38,7 @@ class Node extends React.Component {
                                 : '';
 
         //might need to get rid of this if doesn't work
-        const pathClassName = visited ? 'node-visited' : path ? 'node-path' : '';
+        const pathClassName = path ? 'node-path' : closed ? 'node-closed' : opened ? 'node-opened' : '';
         return (
             <g
                 id={`node-${y}-${x}`}

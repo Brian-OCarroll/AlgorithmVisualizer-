@@ -73,7 +73,7 @@ class AStarFinder {
             for (i = 0, l = neighbors.length; i < l; ++i) {
                 neighbor = neighbors[i];
 
-                if (neighbor.closed) {
+                if (neighbor.closed || neighbor.isWall) {
                     continue;
                 }
 
@@ -100,6 +100,7 @@ class AStarFinder {
                         // Since its f value has been updated, we have to
                         // update its position in the open list
                         openList.rescoreElement(neighbor);
+                        
                     }
                 }
             } // end for each neighbor

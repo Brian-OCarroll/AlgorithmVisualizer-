@@ -18,7 +18,15 @@
   .node-finish {
     fill: red;
   }
-  
+  .node-opened {
+    fill: rgb(46, 46, 255);
+  }
+  .node-closed {
+    fill: rgb(41, 149, 153)
+  }
+  .node-path {
+    fill: rgb(238, 216, 93)
+  }
   .node-start {
     fill: green;
   }

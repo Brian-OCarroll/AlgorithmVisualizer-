@@ -7,6 +7,7 @@
 function backtrace(node) {
     var path = [[node.x, node.y]];
     while (node.parent) {
+        node.isPath = true
         node = node.parent;
         path.push([node.x, node.y]);
     }

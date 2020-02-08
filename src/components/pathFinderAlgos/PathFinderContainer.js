@@ -8,7 +8,7 @@ import Heuristic from './Heuristics'
 class PathFinderContainer extends React.Component {
 
     constructor() {
-        super()
+        super();
         this.grid = getInitialGrid();
         this.nodeSize = 30;
         this.grid.getNode(2, 4).isStart = true
@@ -33,7 +33,7 @@ class PathFinderContainer extends React.Component {
             startCoords: [2,4],
             endCoords: [11,11],
             allowDiagonals: true,
-            dontCrossCorners: true,
+            dontCrossCorners: false,
             mouseIsPressed: false
         }
 
@@ -44,6 +44,7 @@ class PathFinderContainer extends React.Component {
 
     runAlgo = () => {
         const {startCoords, endCoords, algo, heuristic, allowDiagonals, dontCrossCorners} = this.state;
+        console.log('starting')
         switch(algo) {
             case 'A*':
 
@@ -55,7 +56,8 @@ class PathFinderContainer extends React.Component {
               let finder = new AStarFinder(opts)
               let startNode = this.grid.getNode(startCoords[0], startCoords[1]);
               let endNode = this.grid.getNode(endCoords[0], endCoords[1]);
-              finder.findPath(startNode, endNode, this.grid);
+              let path = finder.findPath(startNode, endNode, this.grid);
+              
               this.setState({
                   grid: this.grid
               })
@@ -68,7 +70,19 @@ class PathFinderContainer extends React.Component {
               // code block
           }
     }
+
     reset = () => {
+        this.setState({
+            grid: this.grid,
+          });
+    }
+    resetGrid = () => {
+
+    }
+
+    removeWalls = () => {
+        this.grid.cleanWalls();
+        
         this.setState({
             grid: this.grid,
           });
@@ -160,11 +174,7 @@ class PathFinderContainer extends React.Component {
 
 
     render() {
-    //     const finder = new AStarFinder();
-    //   let begin = this.state.grid.getNode(this.state.startCoords[0], this.state.startCoords[1]);
-    //    let end =  this.state.grid.getNode(this.state.endCoords[0], this.state.endCoords[1]);
-    //     let path = finder.findPath(begin, end, this.state.grid);
-    //     console.log(JSON.stringify(path))
+
         return (
             
             // <Container>
@@ -175,7 +185,7 @@ class PathFinderContainer extends React.Component {
                         return (
                             
                                 row.map((node, nodeIdx) => {
-                                    const { y, x, isEnd, isStart, isWall, active } = node;
+                                    const { y, x, isEnd, isStart, isWall, active, opened, closed, isPath } = node;
                                     return (
                                         <Node
                                             key={nodeIdx}
@@ -185,10 +195,12 @@ class PathFinderContainer extends React.Component {
                                             isStart={isStart}
                                             isWall={isWall}
                                             active={active}
+                                            path={isPath}
                                             nodeSize = {this.nodeSize}
                                             gridWidth = {this.state.grid.width}
                                             gridHeight = {this.state.grid.height}
-          
+                                            opened = {opened}
+                                            closed = {closed}
                                             MouseDown={this.mouseEvent}
                                             MouseEnter={
                                                 this.mouseEvent
@@ -202,6 +214,8 @@ class PathFinderContainer extends React.Component {
                         );
                     })}
                 </svg>
+                <button onClick={() => this.runAlgo()}>Click Bouton Pls</button>
+                <button onClick={() => {this.removeWalls()}}>Remove Walls</button>
                 </>
             // </Container>
         );
@@ -213,20 +227,11 @@ class PathFinderContainer extends React.Component {
  * @see Grid
  */
 const getInitialGrid = () => {
-    const grid = new Grid(25, 25);
+    const grid = new Grid(20, 20);
     grid.setNodes()
     return grid
 };
 
-const getNewGridWithWallToggled = (grid, row, col) => {
-    const newGrid = grid.slice();
-    const node = newGrid[row][col];
-    const newNode = {
-        ...node,
-        isWall: !node.isWall,
-    };
-    newGrid[row][col] = newNode;
-    return newGrid;
-};
+
 export default PathFinderContainer
 
