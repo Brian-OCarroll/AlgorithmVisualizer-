@@ -18,7 +18,7 @@ class AStarFinder {
     constructor(opt) {
         opt = opt || {};
         this.allowDiagonals = opt.allowDiagonals;
-        this.dontCrossCorners = opt.canPassThroughCorners;
+        // this.dontCrossCorners = opt.canPassThroughCorners;
         this.heuristic = opt.heuristic || Heuristic.manhattan;
         this.weight = opt.weight || 1;
         // this.diagonalMovement = opt.diagonalMovement;
@@ -28,6 +28,10 @@ class AStarFinder {
         } else {
             this.heuristic = opt.heuristic || Heuristic.octile;
         }
+        // this.allowDiagonals = true;
+        // this.dontCrossCorners = true;
+        // this.heuristic = Heuristic.manhattan;
+        // this.weight = 1;
     }
 
     init = () => {
@@ -58,7 +62,8 @@ class AStarFinder {
         startNode.opened = true;
 
         // while the open list is not empty
-        while (!(openList.size() === 0)) {
+        while (!openList.empty()) {
+            
             // pop the position of node which has the minimum `f` value.
             node = openList.pop();
             node.closed = true;
