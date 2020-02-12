@@ -88,9 +88,9 @@ export default class Grid {
         for (let i = 0; i < this.nodes.length; i++) {
             for (let j = 0; j < this.nodes[0].length; j++) {
                 //destructure the properties we want to keep
-                let {x, y , isStart, isEnd, isWall} = this.nodes[i][j];
+                let {x, y , isStart, isEnd, isWall, active} = this.nodes[i][j];
                 //set the properties back to the node
-                this.nodes[i][j] = {x, y, isStart, isEnd, isWall}
+                this.nodes[i][j] = {x, y, isStart, isEnd, isWall, active}
             }
         }
     }

@@ -34,11 +34,12 @@ class Node extends React.Component {
                         : isStart
                             ? 'node-start'
                             : isWall
-                                ? 'node-wall'
-                                : '';
+                                ? 'node-wall':
+                                  path ? 'node-path' : closed ? 'node-closed' : opened ? 'node-opened' : "";
 
         //might need to get rid of this if doesn't work
-        const pathClassName = path ? 'node-path' : closed ? 'node-closed' : opened ? 'node-opened' : '';
+        // const pathClassName = path ? 'node-path' : closed ? 'node-closed' : opened ? 'node-opened' : '';
+        const pathClassName = ""
         return (
             <g
                 id={`node-${y}-${x}`}

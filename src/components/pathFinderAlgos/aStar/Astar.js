@@ -63,7 +63,7 @@ class AStarFinder {
 
         // while the open list is not empty
         while (!openList.empty()) {
-            
+            console.log(openList)
             // pop the position of node which has the minimum `f` value.
             node = openList.pop();
             node.closed = true;

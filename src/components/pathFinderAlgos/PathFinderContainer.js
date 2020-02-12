@@ -14,36 +14,46 @@ class PathFinderContainer extends React.Component {
         this.grid.getNode(2, 4).isStart = true
         this.grid.getNode(11, 11).isEnd = true
         this.algos = ["A*", "Depth First"];
-        this.algoSelections = [
-            {
-                heuristics: ["Manhattan", "Euclidean", "Octile", "Chebyshev"],
-                options: ["Allow Diagonal", "Don't Cross Corners"]
-            },
-            {
-                heuristics: ["Manhattan", "Euclidean", "Octile", "Chebyshev"],
-                options: ["Allow Diagonal", "Don't Cross Corners"]
-            }
-        ];
+        this.heuristics = ["Manhattan", "Euclidean", "Octile", "Chebyshev"];
+        this.options = ["allowDiagonals", "canCrossCorners"]
+        // this.algoSelections = [
+        //     {
+        //         heuristics: ["Manhattan", "Euclidean", "Octile", "Chebyshev"],
+        //         options: ["Allow Diagonal", "Don't Cross Corners"]
+        //     },
+        //     {
+        //         heuristics: ["Manhattan", "Euclidean", "Octile", "Chebyshev"],
+        //         options: ["Allow Diagonal", "Don't Cross Corners"]
+        //     }
+        // ];
 
         this.state = {
             algo: "A*",
             heuristic: "Manhattan",
-            options: ["Allow Diagonal", "Can Cross Corners"],
             grid: this.grid,
-            startCoords: [2,4],
-            endCoords: [11,11],
+            startCoords: [2, 4],
+            endCoords: [11, 11],
             allowDiagonals: false,
             canCrossCorners: false,
             mouseIsPressed: false,
             autoRun: false
         }
-        
+
 
         this.mouseAction = null;
         this.mouseEvent = this.mouseEvent.bind(this)
     }
+    handleInputChange = (event) => {
+        const target = event.target;
+        const value = target.type === 'checkbox' ? target.checked : target.value;
+        const name = target.name;
+
+        this.setState({
+            [name]: value
+        });
+    }
     setAllowDiagonals = () => {
-        let {allowDiagonals} = this.state
+        let { allowDiagonals } = this.state
         this.grid.allowDiagonals = !allowDiagonals
         this.setState({
             allowDiagonals: !allowDiagonals,
@@ -52,7 +62,7 @@ class PathFinderContainer extends React.Component {
         this.reset()
     }
     setCanCrossCorners = () => {
-        let {canCrossCorners} = this.state
+        let { canCrossCorners } = this.state
         this.grid.canCrossCorners = !canCrossCorners
         this.setState({
             canCrossCorners: !canCrossCorners,
@@ -61,43 +71,43 @@ class PathFinderContainer extends React.Component {
         this.reset()
     }
     runAlgo = () => {
-        const {startCoords, endCoords, algo, heuristic, allowDiagonals, canCrossCorners} = this.state;
-      
-        switch(algo) {
+        const { startCoords, endCoords, algo, heuristic, allowDiagonals, canCrossCorners } = this.state;
+
+        switch (algo) {
             case 'A*':
 
-              let opts = {
-                heuristic: Heuristic[heuristic.toLowerCase()],
-                allowDiagonals: allowDiagonals,
-                canCrossCorners: canCrossCorners
-              }
-              let finder = new AStarFinder(opts)
-              let startNode = this.grid.getNode(startCoords[0], startCoords[1]);
-              let endNode = this.grid.getNode(endCoords[0], endCoords[1]);
-              let path = finder.findPath(startNode, endNode, this.grid);
-              
-              this.setState({
-                  grid: this.grid
-              })
-              break;
+                let opts = {
+                    heuristic: Heuristic[heuristic.toLowerCase()],
+                    allowDiagonals: allowDiagonals,
+                    canCrossCorners: canCrossCorners
+                }
+                let finder = new AStarFinder(opts)
+                let startNode = this.grid.getNode(startCoords[0], startCoords[1]);
+                let endNode = this.grid.getNode(endCoords[0], endCoords[1]);
+                let path = finder.findPath(startNode, endNode, this.grid);
+
+                this.setState({
+                    grid: this.grid
+                })
+                break;
 
             case 'Best First Search':
-              // code block
-              break;
+                // code block
+                break;
             default:
-              // code block
-          }
+            // code block
+        }
     }
 
     reset = () => {
         this.grid.cleanGrid();
         this.setState({
             grid: this.grid,
-          });
-         if (this.state.autoRun) {
+        });
+        if (this.state.autoRun) {
             this.runAlgo()
-         } 
-         
+        }
+
     }
 
     setRunOnUpdate = () => {
@@ -108,10 +118,10 @@ class PathFinderContainer extends React.Component {
 
     removeWalls = () => {
         this.grid.cleanWalls();
-        
+
         this.setState({
             grid: this.grid,
-          });
+        });
     }
     cleanGrid = () => {
         this.grid.cleanGrid();
@@ -127,13 +137,14 @@ class PathFinderContainer extends React.Component {
      * see @Grid
      */
     updateStart(x, y) {
-        const {startCoords} = this.state
+        const { startCoords } = this.state
         this.grid.getNode(startCoords[0], startCoords[1]).isStart = false;
-      
+
         this.setState({
             startCoords: [x, y]
         })
         this.grid.getNode(x, y).isStart = true;
+
     }
 
     /**
@@ -144,18 +155,20 @@ class PathFinderContainer extends React.Component {
      * see @Grid
      */
     updateEnd(x, y) {
-        const {endCoords} = this.state
+        const { endCoords } = this.state
         this.grid.getNode(endCoords[0], endCoords[1]).isEnd = false;
+
         this.setState({
             endCoords: [x, y]
         })
         this.grid.getNode(x, y).isEnd = true;
+
     }
 
     mouseEvent = (x, y, evt) => {
-      
+
         if (evt.type === 'mouseup') {
-            
+
             this.mouseAction = null;
 
             this.grid.getNode(x, y).active = false
@@ -175,19 +188,19 @@ class PathFinderContainer extends React.Component {
         if (this.mouseAction == null) {
             if (this.grid.getNode(x, y).isStart) {
                 this.mouseAction = function (x, y) {
-                   
+
                     this.updateStart(x, y);
 
                 }
             } else if (this.grid.getNode(x, y).isEnd) {
                 this.mouseAction = function (x, y) {
-                    
-                    this.updateEnd(x,y);
+
+                    this.updateEnd(x, y);
                 };
             } else if (this.grid.getNode(x, y).isWall) {
 
                 this.mouseAction = function (x, y) {
-                    
+
                     this.grid.removeWall(x, y);
                     //   this.grid.cells[cellIndex].removeProperty(['wall']);
                 };
@@ -198,7 +211,7 @@ class PathFinderContainer extends React.Component {
             }
         }
         this.grid.getNode(x, y).active = true
-      
+
         this.mouseAction(x, y);
         this.reset();
     }
@@ -207,14 +220,16 @@ class PathFinderContainer extends React.Component {
     render() {
 
         return (
-            
+
             // <Container>
-            <>
-                <Controls algorithms={this.algos} algoSelections={this.algoSelections} />
-                <svg className={ this.state.mouseActive ? 'mouseActive' : '' } width={(this.state.grid.width*this.nodeSize)+1} height={(this.state.grid.height*this.nodeSize)+1}>
-                    {this.state.grid.nodes.map((row, rowIdx) => {
-                        return (
-                            
+            <Container>
+                <Controls handleChange={this.handleInputChange} algo={this.state.algo} heuristic={this.state.heuristic} algorithms={this.algos} heuristics={this.heuristics} options={this.options} />
+                <Row>
+
+                    <svg className={this.state.mouseActive ? 'mouseActive' : ''} width={(this.state.grid.width * this.nodeSize) + 1} height={(this.state.grid.height * this.nodeSize) + 1}>
+                        {this.state.grid.nodes.map((row, rowIdx) => {
+                            return (
+
                                 row.map((node, nodeIdx) => {
                                     const { y, x, isEnd, isStart, isWall, active, opened, closed, isPath } = node;
                                     return (
@@ -227,31 +242,35 @@ class PathFinderContainer extends React.Component {
                                             isWall={isWall}
                                             active={active}
                                             path={isPath}
-                                            nodeSize = {this.nodeSize}
-                                            gridWidth = {this.state.grid.width}
-                                            gridHeight = {this.state.grid.height}
-                                            opened = {opened}
-                                            closed = {closed}
+                                            nodeSize={this.nodeSize}
+                                            gridWidth={this.state.grid.width}
+                                            gridHeight={this.state.grid.height}
+                                            opened={opened}
+                                            closed={closed}
                                             MouseDown={this.mouseEvent}
                                             MouseEnter={
                                                 this.mouseEvent
                                             }
                                             MouseUp={this.mouseEvent}
-                                            
+
                                         ></Node>
                                     );
                                 })
-                            
-                        );
-                    })}
-                </svg>
-                <button onClick={() => this.runAlgo()}>Click Bouton Pls</button>
-                <button onClick={() => {this.removeWalls()}}>Remove Walls</button>
-                <button onClick={() => {this.cleanGrid()}}>Reset Grid</button>
-                <button className = {this.state.autoRun ? "btn-active" : ""} onClick={() => {this.setRunOnUpdate()}}>Auto Run?</button>
-                <button className = {this.state.allowDiagonals ? "btn-active" : ""} onClick={() => {this.setAllowDiagonals()}}>Allow Diagonals</button>
-                <button className = {this.state.canCrossCorners ? "btn-active" : ""} onClick={() => {this.setCanCrossCorners()}}>Can Cross Corners?</button>
-                </>
+
+                            );
+                        })}
+                    </svg>
+                </Row>
+                <Row>
+                    <button onClick={() => this.runAlgo()}>Click Bouton Pls</button>
+                    <button onClick={() => { this.removeWalls() }}>Remove Walls</button>
+                    <button onClick={() => { this.cleanGrid() }}>Reset Grid</button>
+                    <button className={this.state.autoRun ? "btn-active" : ""} onClick={() => { this.setRunOnUpdate() }}>Auto Run?</button>
+                </Row>
+
+                <button className={this.state.allowDiagonals ? "btn-active" : ""} onClick={() => { this.setAllowDiagonals() }}>Allow Diagonals</button>
+                <button className={this.state.canCrossCorners ? "btn-active" : ""} onClick={() => { this.setCanCrossCorners() }}>Can Cross Corners?</button>
+            </Container>
             // </Container>
         );
     }
