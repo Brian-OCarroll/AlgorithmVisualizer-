@@ -46,6 +46,9 @@ export default class BinaryHeap {
     size() {
       return this.content.length;
     }
+    empty() {
+      return this.content.length === 0
+    }
     rescoreElement(node) {
       this.sinkDown(this.content.indexOf(node));
     }
