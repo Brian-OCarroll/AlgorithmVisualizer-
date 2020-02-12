@@ -28,30 +28,48 @@ class PathFinderContainer extends React.Component {
         this.state = {
             algo: "A*",
             heuristic: "Manhattan",
-            options: ["Allow Diagonal", "Don't Cross Corners"],
+            options: ["Allow Diagonal", "Can Cross Corners"],
             grid: this.grid,
             startCoords: [2,4],
             endCoords: [11,11],
-            allowDiagonals: true,
-            dontCrossCorners: false,
-            mouseIsPressed: false
+            allowDiagonals: false,
+            canCrossCorners: false,
+            mouseIsPressed: false,
+            autoRun: false
         }
-
+        
 
         this.mouseAction = null;
         this.mouseEvent = this.mouseEvent.bind(this)
     }
-
+    setAllowDiagonals = () => {
+        let {allowDiagonals} = this.state
+        this.grid.allowDiagonals = !allowDiagonals
+        this.setState({
+            allowDiagonals: !allowDiagonals,
+            grid: this.grid
+        })
+        this.reset()
+    }
+    setCanCrossCorners = () => {
+        let {canCrossCorners} = this.state
+        this.grid.canCrossCorners = !canCrossCorners
+        this.setState({
+            canCrossCorners: !canCrossCorners,
+            grid: this.grid
+        })
+        this.reset()
+    }
     runAlgo = () => {
-        const {startCoords, endCoords, algo, heuristic, allowDiagonals, dontCrossCorners} = this.state;
-        console.log('starting')
+        const {startCoords, endCoords, algo, heuristic, allowDiagonals, canCrossCorners} = this.state;
+      
         switch(algo) {
             case 'A*':
 
               let opts = {
                 heuristic: Heuristic[heuristic.toLowerCase()],
                 allowDiagonals: allowDiagonals,
-                dontCrossCorners: dontCrossCorners
+                canCrossCorners: canCrossCorners
               }
               let finder = new AStarFinder(opts)
               let startNode = this.grid.getNode(startCoords[0], startCoords[1]);
@@ -72,12 +90,20 @@ class PathFinderContainer extends React.Component {
     }
 
     reset = () => {
+        this.grid.cleanGrid();
         this.setState({
             grid: this.grid,
           });
+         if (this.state.autoRun) {
+            this.runAlgo()
+         } 
+         
     }
-    resetGrid = () => {
 
+    setRunOnUpdate = () => {
+        this.setState({
+            autoRun: !this.state.autoRun
+        })
     }
 
     removeWalls = () => {
@@ -87,7 +113,12 @@ class PathFinderContainer extends React.Component {
             grid: this.grid,
           });
     }
-
+    cleanGrid = () => {
+        this.grid.cleanGrid();
+        this.setState({
+            grid: this.grid
+        })
+    }
     /**
      * Updates the starting node to a new location
      * Returns nothing
@@ -216,6 +247,10 @@ class PathFinderContainer extends React.Component {
                 </svg>
                 <button onClick={() => this.runAlgo()}>Click Bouton Pls</button>
                 <button onClick={() => {this.removeWalls()}}>Remove Walls</button>
+                <button onClick={() => {this.cleanGrid()}}>Reset Grid</button>
+                <button className = {this.state.autoRun ? "btn-active" : ""} onClick={() => {this.setRunOnUpdate()}}>Auto Run?</button>
+                <button className = {this.state.allowDiagonals ? "btn-active" : ""} onClick={() => {this.setAllowDiagonals()}}>Allow Diagonals</button>
+                <button className = {this.state.canCrossCorners ? "btn-active" : ""} onClick={() => {this.setCanCrossCorners()}}>Can Cross Corners?</button>
                 </>
             // </Container>
         );

@@ -16,13 +16,14 @@
     fill:rgb(116, 114, 156);
   }
   .node-finish {
-    fill: red;
+    fill: red !important;
   }
   .node-opened {
-    fill: rgb(46, 46, 255);
+    fill: rgb(41, 149, 153) !important;
+
   }
   .node-closed {
-    fill: rgb(41, 149, 153)
+    fill: rgb(46, 46, 255)
   }
   .node-path {
     fill: rgb(238, 216, 93)
