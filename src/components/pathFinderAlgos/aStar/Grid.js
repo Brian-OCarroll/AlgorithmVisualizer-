@@ -9,7 +9,7 @@ export default class Grid {
         this.gridSize = width * height;
         this.nodes = new Array(height); //set rows
         this.allowDiagonals = false;
-        this.canPassThroughCorners = false;
+        this.canCrossCorners = false;
         this.LURDMoves = [ //left right up down
             [-1, 0],
             [0, -1],
@@ -23,7 +23,7 @@ export default class Grid {
             [-1, 1]
         ];
         //references to the this.LURDMoves entries that would block the diagonal
-        //if they are both walls and canPassThroughCorners = false
+        //if they are both walls and canCrossCorners = false
         this.DiagonalBlockers = [
             [0, 1],
             [1, 2],
@@ -36,7 +36,7 @@ export default class Grid {
      * @private
      * @see Grid
      */
-    setNodes = () => {
+    setNodes = (opts) => {
         for (let i = 0; i < this.height; ++i) {
             this.nodes[i] = new Array(this.width); //set columns
             for (let j = 0; j < this.width; ++j) {
@@ -45,7 +45,7 @@ export default class Grid {
         }
         return this.nodes
     }
-    
+
     createNode = (x, y) => {
         return {
             x, //the column
@@ -54,35 +54,46 @@ export default class Grid {
             isEnd: false,
             active: false,
             isPath: false,
+            isClosed: false,
             distance: Infinity,
             isVisited: false,
             isWall: false,
             previousNode: null,
         }
     }
-    cleanWalls = () => {
-        for ( let i = 0; i > this.nodes.length; i++ ) {
-            for (let j = 0; j > this.nodes[i].length; i++) {
-                
-                this.removeWall(j, i)
-             
-            }
-        }
 
-    };
     /**
      * MIGHT NEED TO SWITCH X AND Y HERE
      */
     getNode = (x, y) => {
         if (y < 0 || y >= this.nodes.length ||
             x < 0 || x >= this.nodes[0].length) {
+               
             return null;
         }
         return this.nodes[y][x];
     }
 
+    cleanWalls = () => {
+     
+        for (let i = 0; i < this.nodes.length; i++) {
+            
+            for (let j = 0; j < this.nodes[0].length; j++) {
+                this.removeWall(j, i)
+            }
+        }
+    }
+    cleanGrid = () => {
 
-
+        for (let i = 0; i < this.nodes.length; i++) {
+            for (let j = 0; j < this.nodes[0].length; j++) {
+                //destructure the properties we want to keep
+                let {x, y , isStart, isEnd, isWall} = this.nodes[i][j];
+                //set the properties back to the node
+                this.nodes[i][j] = {x, y, isStart, isEnd, isWall}
+            }
+        }
+    }
     isInsideGrid = (x, y) => {
         return (x >= 0 && x < this.width) && (y >= 0 && y < this.height);
     }
@@ -140,10 +151,10 @@ export default class Grid {
         let i;
         //Add Left/Up/Right/Down Moves
         for (i = 0; i < 4; i++) {
-            console.log(startNode.x, this.LURDMoves[0][i], startNode.y + this.LURDMoves[1][i])
-            console.log(startNode)
-            let node = this.getNode(startNode.x + this.LURDMoves[i][0], startNode.y + this.LURDMoves[i][1]);
+            
+            let node = this.getNode(startNode.x + this.LURDMoves[i][1], startNode.y + this.LURDMoves[i][0]);
             if (node != null) {
+              
                 if (!node.isWall) {
                     startNode.neighbors.push(node);
                 } else {
@@ -151,7 +162,7 @@ export default class Grid {
                 }
             }
         }
-
+        // console.log(startNode)
         //Add Diagonals
         /**
          * GRIDX MAY NEED TO BE SWITCH WITH GRIDY
@@ -160,21 +171,23 @@ export default class Grid {
         for (i = 0; i < 4; i++) {
             const gridX = startNode.x + this.DiagonalMoves[i][0];
             const gridY = startNode.y + this.DiagonalMoves[i][1];
-
+            // console.log(gridX, gridY)
+            
             const diagNode = this.getNode(gridX, gridY);
-
-            if (diagNode != null) {
+            // console.log(diagNode)
+            if (diagNode != null ) {
+                // console.log('start', startNode.x, startNode.y)
                 if (this.allowDiagonals && !diagNode.isWall) {
-                    if (!this.canPassThroughCorners) {
+                    if (!this.canCrossCorners) {
                         //Check if blocked by surrounding walls
-                        var border1 = this.DiagonalBlockers[i][0];
-                        var border2 = this.DiagonalBlockers[i][1];
+                        var border1 = this.DiagonalBlockers[i][0]; 
+                        var border2 = this.DiagonalBlockers[i][1]; 
                         //no need to protect against OOB as diagonal move
                         //check ensures that blocker refs must be valid
-                        var blocker1 = this.grid[startNode.y + this.LURDMoves[border1][0]]
-                        [this.x + this.LURDMoves[border1][1]];
-                        var blocker2 = this.grid[startNode.y + this.LURDMoves[border2][0]]
-                        [this.x + this.LURDMoves[border2][1]];
+                        var blocker1 = this.nodes[startNode.y + this.LURDMoves[border1][1]]
+                        [startNode.x + this.LURDMoves[border1][0]];
+                        var blocker2 = this.nodes[startNode.y + this.LURDMoves[border2][1]]
+                        [startNode.x + this.LURDMoves[border2][0]];
 
 
                         if (!blocker1.isWall || !blocker2.isWall) {
