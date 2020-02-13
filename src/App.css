@@ -1,5 +1,7 @@
 .App {
   text-align: center;
+  background: #D8D4F2;
+  width:100%;
 }
 
 .App-logo {
@@ -39,4 +41,11 @@
 
 .btn-active {
   background-color: rgb(116, 209, 116)
+}
+.flex {
+  display: flex;
+}
+
+.flex--column {
+  flex-direction: column;
 }

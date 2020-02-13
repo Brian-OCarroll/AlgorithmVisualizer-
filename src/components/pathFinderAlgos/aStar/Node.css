@@ -13,20 +13,20 @@
     cursor:default;
   }
   rect{
-    fill:rgb(116, 114, 156);
+    fill:rgb(0, 0, 0);
   }
   .node-finish {
     fill: red !important;
   }
   .node-opened {
-    fill: rgb(41, 149, 153) !important;
+    fill: rgb(105, 197, 93) !important;
 
   }
   .node-closed {
-    fill: rgb(46, 46, 255)
+    fill: rgb(196, 196, 243)
   }
   .node-path {
-    fill: rgb(238, 216, 93)
+    fill: rgb(255, 232, 100)
   }
   .node-start {
     fill: green;
@@ -36,7 +36,7 @@
       cursor: pointer;
   }
   .node-start--active {
-    fill: rgb(17, 56, 17);
+    fill: rgb(56, 31, 17);
   }
   .node-finish--active {
     fill: rgb(134, 34, 34);
@@ -75,7 +75,7 @@
   }
   
   .node-wall {
-    fill: rgb(12, 53, 71);
+    fill: rgb(224, 119, 20);
   }
   
   .node-shortest-path {

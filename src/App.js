@@ -11,9 +11,9 @@ function App() {
     <div className="App">
 
       <Navigation />
-      <Container>
+      
         <PathFinderContainer />
-      </Container>
+      
     </div>
   );
 }

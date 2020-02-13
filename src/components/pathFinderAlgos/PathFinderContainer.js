@@ -222,11 +222,11 @@ class PathFinderContainer extends React.Component {
         return (
 
             // <Container>
-            <Container>
+            <Container fluid="false" style={{position: "relative"}}>
                 <Controls handleChange={this.handleInputChange} algo={this.state.algo} heuristic={this.state.heuristic} algorithms={this.algos} heuristics={this.heuristics} options={this.options} />
                 <Row>
-
-                    <svg className={this.state.mouseActive ? 'mouseActive' : ''} width={(this.state.grid.width * this.nodeSize) + 1} height={(this.state.grid.height * this.nodeSize) + 1}>
+                <Col>
+                    <svg  className={this.state.mouseActive ? 'mouseActive' : ''} width={(this.state.grid.width * this.nodeSize) + 1} height={(this.state.grid.height * this.nodeSize) + 1}>
                         {this.state.grid.nodes.map((row, rowIdx) => {
                             return (
 
@@ -260,12 +260,15 @@ class PathFinderContainer extends React.Component {
                             );
                         })}
                     </svg>
+                    </Col>
                 </Row>
                 <Row>
+                    <Col>
                     <button onClick={() => this.runAlgo()}>Click Bouton Pls</button>
                     <button onClick={() => { this.removeWalls() }}>Remove Walls</button>
                     <button onClick={() => { this.cleanGrid() }}>Reset Grid</button>
                     <button className={this.state.autoRun ? "btn-active" : ""} onClick={() => { this.setRunOnUpdate() }}>Auto Run?</button>
+                    </Col>
                 </Row>
 
                 <button className={this.state.allowDiagonals ? "btn-active" : ""} onClick={() => { this.setAllowDiagonals() }}>Allow Diagonals</button>
