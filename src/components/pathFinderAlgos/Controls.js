@@ -126,7 +126,7 @@ const Controls = (props) => {
             <div id="mySidebar" className="overlay-content" >
   
                 <p>Select an Algorithm</p>
-                <select value={props.algo} onChange={(e) => {this.handleChange(e)}}>
+                <select name="algo" value={props.algo} onChange={(e) => {props.handleChange(e)}}>
                      {props.algorithms.map((algo, i) => {
                         return (
                             <option key={i} value={algo}>{algo}</option>
@@ -134,7 +134,7 @@ const Controls = (props) => {
                     })}
                 </select>
                 <p>Select A Heuristic</p>
-                <select value={props.heuristic} onChange={(e) => {this.handleChange(e)}} >
+                <select name="heuristic" value={props.heuristic} onChange={(e) => {props.handleChange(e)}} >
                     {props.heuristics.map((heuristic, i) => {
                         return (
                             <option  key={i} value={heuristic}>{heuristic}</option>
@@ -151,8 +151,8 @@ const Controls = (props) => {
                                 <input
                                     name={opt}
                                     type="checkbox"
-                                    onChange={(e) => {this.handleChange(e)}}
-                                // checked={this.state[opt]}
+                                    onChange={(e) => {props.handleChange(e)}}
+                                checked={props[opt]}
                                 // onChange={this.handleInputChange} 
                                 />
                             </label>

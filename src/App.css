@@ -2,6 +2,9 @@
   text-align: center;
   background: #D8D4F2;
   width:100%;
+  
+    font-family: 'Tomorrow', sans-serif;
+    font-weight: 700;
 }
 
 .App-logo {
@@ -48,4 +51,7 @@
 
 .flex--column {
   flex-direction: column;
+}
+.scroll-grid {
+  overflow: scroll;
 }

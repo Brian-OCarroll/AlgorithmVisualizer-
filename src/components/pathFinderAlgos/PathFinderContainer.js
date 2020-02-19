@@ -16,17 +16,6 @@ class PathFinderContainer extends React.Component {
         this.algos = ["A*", "Depth First"];
         this.heuristics = ["Manhattan", "Euclidean", "Octile", "Chebyshev"];
         this.options = ["allowDiagonals", "canCrossCorners"]
-        // this.algoSelections = [
-        //     {
-        //         heuristics: ["Manhattan", "Euclidean", "Octile", "Chebyshev"],
-        //         options: ["Allow Diagonal", "Don't Cross Corners"]
-        //     },
-        //     {
-        //         heuristics: ["Manhattan", "Euclidean", "Octile", "Chebyshev"],
-        //         options: ["Allow Diagonal", "Don't Cross Corners"]
-        //     }
-        // ];
-
         this.state = {
             algo: "A*",
             heuristic: "Manhattan",
@@ -47,10 +36,17 @@ class PathFinderContainer extends React.Component {
         const target = event.target;
         const value = target.type === 'checkbox' ? target.checked : target.value;
         const name = target.name;
+        if (target.name === "allowDiagonals") {
+            this.setAllowDiagonals()
+        } else if ( target.name === "canCrossCorners") {
+            this.setCanCrossCorners()
+        } else {
+            this.setState({
+                [name]: value
+            });
+            this.reset()
+        }
 
-        this.setState({
-            [name]: value
-        });
     }
     setAllowDiagonals = () => {
         let { allowDiagonals } = this.state
@@ -176,7 +172,9 @@ class PathFinderContainer extends React.Component {
             this.setState({
                 grid: this.grid
             })
+            this.reset()
             return;
+            
         }
 
         // Ignore mouseover's without mousedown
@@ -223,9 +221,15 @@ class PathFinderContainer extends React.Component {
 
             // <Container>
             <Container fluid="false" style={{position: "relative"}}>
-                <Controls handleChange={this.handleInputChange} algo={this.state.algo} heuristic={this.state.heuristic} algorithms={this.algos} heuristics={this.heuristics} options={this.options} />
                 <Row>
-                <Col>
+                    <Col>
+                        <h1>Path Finding Algorithms</h1>
+                    </Col>
+                </Row>
+                <Controls handleChange={this.handleInputChange} algo={this.state.algo} heuristic={this.state.heuristic} canCrossCorners={this.state.canCrossCorners} allowDiagonals={this.state.allowDiagonals} algorithms={this.algos} heuristics={this.heuristics} options={this.options} />
+                <Row>
+                <Col >
+                <div className="scroll-grid">
                     <svg  className={this.state.mouseActive ? 'mouseActive' : ''} width={(this.state.grid.width * this.nodeSize) + 1} height={(this.state.grid.height * this.nodeSize) + 1}>
                         {this.state.grid.nodes.map((row, rowIdx) => {
                             return (
@@ -260,6 +264,7 @@ class PathFinderContainer extends React.Component {
                             );
                         })}
                     </svg>
+                    </div>
                     </Col>
                 </Row>
                 <Row>
@@ -271,8 +276,8 @@ class PathFinderContainer extends React.Component {
                     </Col>
                 </Row>
 
-                <button className={this.state.allowDiagonals ? "btn-active" : ""} onClick={() => { this.setAllowDiagonals() }}>Allow Diagonals</button>
-                <button className={this.state.canCrossCorners ? "btn-active" : ""} onClick={() => { this.setCanCrossCorners() }}>Can Cross Corners?</button>
+                {/* <button className={this.state.allowDiagonals ? "btn-active" : ""} onClick={() => { this.setAllowDiagonals() }}>Allow Diagonals</button>
+                <button className={this.state.canCrossCorners ? "btn-active" : ""} onClick={() => { this.setCanCrossCorners() }}>Can Cross Corners?</button> */}
             </Container>
             // </Container>
         );
@@ -284,7 +289,7 @@ class PathFinderContainer extends React.Component {
  * @see Grid
  */
 const getInitialGrid = () => {
-    const grid = new Grid(20, 20);
+    const grid = new Grid(40, 20);
     grid.setNodes()
     return grid
 };
