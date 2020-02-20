@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Controls from '../pathFinderAlgos/Controls';
 import { Container, Row, Col } from 'react-bootstrap';
-import Grid from './aStar/Grid';
-import Node from './aStar/Node';
-import AStarFinder from './aStar/Astar';
-import Heuristic from './Heuristics'
+import Grid from './Grid/Grid';
+import Node from './Grid/Node';
+import AStarFinder from './Finders/Astar';
+import Heuristic from './Heuristics';
+
 class PathFinderContainer extends React.Component {
 
     constructor() {
@@ -13,7 +14,7 @@ class PathFinderContainer extends React.Component {
         this.nodeSize = 30;
         this.grid.getNode(2, 4).isStart = true
         this.grid.getNode(11, 11).isEnd = true
-        this.algos = ["A*", "Depth First"];
+        this.algos = ["A*", "Best-First"];
         this.heuristics = ["Manhattan", "Euclidean", "Octile", "Chebyshev"];
         this.options = ["allowDiagonals", "canCrossCorners"]
         this.state = {
@@ -32,13 +33,37 @@ class PathFinderContainer extends React.Component {
         this.mouseAction = null;
         this.mouseEvent = this.mouseEvent.bind(this)
     }
+    animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder) {
+        for (let i = 0; i <= visitedNodesInOrder.length; i++) {
+            if (i === visitedNodesInOrder.length) {
+                setTimeout(() => {
+                    this.animateShortestPath(nodesInShortestPathOrder);
+                }, 10 * i);
+                return;
+            }
+            setTimeout(() => {
+                const node = visitedNodesInOrder[i];
+                document.getElementById(`node-${node.row}-${node.col}`).className =
+                    'node node-visited';
+            }, 10 * i);
+        }
+    }
+    animateShortestPath(nodesInShortestPathOrder) {
+        for (let i = 0; i < nodesInShortestPathOrder.length; i++) {
+            setTimeout(() => {
+                const node = nodesInShortestPathOrder[i];
+                document.getElementById(`node-${node.row}-${node.col}`).className =
+                    'node node-shortest-path';
+            }, 50 * i);
+        }
+    }
     handleInputChange = (event) => {
         const target = event.target;
         const value = target.type === 'checkbox' ? target.checked : target.value;
         const name = target.name;
         if (target.name === "allowDiagonals") {
             this.setAllowDiagonals()
-        } else if ( target.name === "canCrossCorners") {
+        } else if (target.name === "canCrossCorners") {
             this.setCanCrossCorners()
         } else {
             this.setState({
@@ -66,35 +91,43 @@ class PathFinderContainer extends React.Component {
         })
         this.reset()
     }
+
     runAlgo = () => {
         const { startCoords, endCoords, algo, heuristic, allowDiagonals, canCrossCorners } = this.state;
-
+        let opts = {
+            heuristic: Heuristic[heuristic.toLowerCase()],
+            allowDiagonals: allowDiagonals,
+            canCrossCorners: canCrossCorners
+        },
+            finder,
+            startNode = this.grid.getNode(startCoords[0], startCoords[1]),
+            endNode = this.grid.getNode(endCoords[0], endCoords[1]),
+            path
         switch (algo) {
             case 'A*':
+                finder = new AStarFinder(opts)
 
-                let opts = {
-                    heuristic: Heuristic[heuristic.toLowerCase()],
-                    allowDiagonals: allowDiagonals,
-                    canCrossCorners: canCrossCorners
-                }
-                let finder = new AStarFinder(opts)
-                let startNode = this.grid.getNode(startCoords[0], startCoords[1]);
-                let endNode = this.grid.getNode(endCoords[0], endCoords[1]);
-                let path = finder.findPath(startNode, endNode, this.grid);
+                path = finder.findPath(startNode, endNode, this.grid);
 
                 this.setState({
                     grid: this.grid
                 })
                 break;
 
-            case 'Best First Search':
-                // code block
+            case 'Best-First':
+
+                finder = new AStarFinder(opts)
+                finder.setBestFirst()
+                path = finder.findPath(startNode, endNode, this.grid);
+
+                this.setState({
+                    grid: this.grid
+                })
                 break;
             default:
             // code block
         }
     }
-
     reset = () => {
         this.grid.cleanGrid();
         this.setState({
@@ -174,7 +207,7 @@ class PathFinderContainer extends React.Component {
             })
             this.reset()
             return;
-            
+
         }
 
         // Ignore mouseover's without mousedown
@@ -220,7 +253,7 @@ class PathFinderContainer extends React.Component {
         return (
 
             // <Container>
-            <Container fluid="false" style={{position: "relative"}}>
+            <Container fluid="false" style={{ position: "relative" }}>
                 <Row>
                     <Col>
                         <h1>Path Finding Algorithms</h1>
@@ -228,51 +261,51 @@ class PathFinderContainer extends React.Component {
                 </Row>
                 <Controls handleChange={this.handleInputChange} algo={this.state.algo} heuristic={this.state.heuristic} canCrossCorners={this.state.canCrossCorners} allowDiagonals={this.state.allowDiagonals} algorithms={this.algos} heuristics={this.heuristics} options={this.options} />
                 <Row>
-                <Col >
-                <div className="scroll-grid">
-                    <svg  className={this.state.mouseActive ? 'mouseActive' : ''} width={(this.state.grid.width * this.nodeSize) + 1} height={(this.state.grid.height * this.nodeSize) + 1}>
-                        {this.state.grid.nodes.map((row, rowIdx) => {
-                            return (
-
-                                row.map((node, nodeIdx) => {
-                                    const { y, x, isEnd, isStart, isWall, active, opened, closed, isPath } = node;
+                    <Col >
+                        <div className="scroll-grid">
+                            <svg className={this.state.mouseActive ? 'mouseActive white-bg' : 'white-bg'} width={(this.state.grid.width * this.nodeSize) + 1} height={(this.state.grid.height * this.nodeSize) + 1}>
+                                {this.state.grid.nodes.map((row, rowIdx) => {
                                     return (
-                                        <Node
-                                            key={nodeIdx}
-                                            x={x}
-                                            y={y}
-                                            isEnd={isEnd}
-                                            isStart={isStart}
-                                            isWall={isWall}
-                                            active={active}
-                                            path={isPath}
-                                            nodeSize={this.nodeSize}
-                                            gridWidth={this.state.grid.width}
-                                            gridHeight={this.state.grid.height}
-                                            opened={opened}
-                                            closed={closed}
-                                            MouseDown={this.mouseEvent}
-                                            MouseEnter={
-                                                this.mouseEvent
-                                            }
-                                            MouseUp={this.mouseEvent}
 
-                                        ></Node>
+                                        row.map((node, nodeIdx) => {
+                                            const { y, x, isEnd, isStart, isWall, active, opened, closed, isPath } = node;
+                                            return (
+                                                <Node
+                                                    key={nodeIdx}
+                                                    x={x}
+                                                    y={y}
+                                                    isEnd={isEnd}
+                                                    isStart={isStart}
+                                                    isWall={isWall}
+                                                    active={active}
+                                                    path={isPath}
+                                                    nodeSize={this.nodeSize}
+                                                    gridWidth={this.state.grid.width}
+                                                    gridHeight={this.state.grid.height}
+                                                    opened={opened}
+                                                    closed={closed}
+                                                    MouseDown={this.mouseEvent}
+                                                    MouseEnter={
+                                                        this.mouseEvent
+                                                    }
+                                                    MouseUp={this.mouseEvent}
+
+                                                ></Node>
+                                            );
+                                        })
+
                                     );
-                                })
-
-                            );
-                        })}
-                    </svg>
-                    </div>
+                                })}
+                            </svg>
+                        </div>
                     </Col>
                 </Row>
                 <Row>
                     <Col>
-                    <button onClick={() => this.runAlgo()}>Click Bouton Pls</button>
-                    <button onClick={() => { this.removeWalls() }}>Remove Walls</button>
-                    <button onClick={() => { this.cleanGrid() }}>Reset Grid</button>
-                    <button className={this.state.autoRun ? "btn-active" : ""} onClick={() => { this.setRunOnUpdate() }}>Auto Run?</button>
+                        <button onClick={() => this.runAlgo()}>Click Bouton Pls</button>
+                        <button onClick={() => { this.removeWalls() }}>Remove Walls</button>
+                        <button onClick={() => { this.cleanGrid() }}>Reset Grid</button>
+                        <button className={this.state.autoRun ? "btn-active" : ""} onClick={() => { this.setRunOnUpdate() }}>Auto Run?</button>
                     </Col>
                 </Row>
 
@@ -289,7 +322,7 @@ class PathFinderContainer extends React.Component {
  * @see Grid
  */
 const getInitialGrid = () => {
-    const grid = new Grid(40, 20);
+    const grid = new Grid(35, 20);
     grid.setNodes()
     return grid
 };

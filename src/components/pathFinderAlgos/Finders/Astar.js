@@ -33,9 +33,14 @@ class AStarFinder {
         // this.heuristic = Heuristic.manhattan;
         // this.weight = 1;
     }
-
-    init = () => {
-        
+    /**
+     * Changes Algorithm to best first
+     */
+    setBestFirst = () => {
+        let heuristic = this.heuristic
+        this.heuristic = function(dx, dy) {
+            return heuristic(dx, dy) * 1000000;
+        };
     }
 
     /**

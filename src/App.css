@@ -1,10 +1,13 @@
 .App {
   text-align: center;
-  background: #D8D4F2;
+  /* background: rgb(0, 0, 0); */
+  /* background: #1f1a25; */
+  background: #19151f;
   width:100%;
-  
-    font-family: 'Tomorrow', sans-serif;
-    font-weight: 700;
+  height: 100vh;
+  font-family: 'Tomorrow', sans-serif;
+  font-weight: 700;
+  color: white
 }
 
 .App-logo {
@@ -52,6 +55,13 @@
 .flex--column {
   flex-direction: column;
 }
-.scroll-grid {
-  overflow: scroll;
+
+.white-bg {
+  background-color: white;
+}
+
+@media only screen and (max-width: 1100px) {
+  .scroll-grid {
+    overflow: scroll;
+  }
 }
