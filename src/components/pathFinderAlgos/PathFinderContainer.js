@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React from 'react';
 import Controls from '../pathFinderAlgos/Controls';
-import { Container, Row, Col } from 'react-bootstrap';
 import Grid from './Grid/Grid';
 import Node from './Grid/Node';
 import AStarFinder from './Finders/Astar';
@@ -16,7 +15,7 @@ class PathFinderContainer extends React.Component {
         this.grid.getNode(11, 11).isEnd = true
         this.algos = ["A*", "Best-First"];
         this.heuristics = ["Manhattan", "Euclidean", "Octile", "Chebyshev"];
-        this.options = ["allowDiagonals", "canCrossCorners"]
+        this.options = ["allowDiagonals", "canCrossCorners", "autoRun"]
         this.state = {
             algo: "A*",
             heuristic: "Manhattan",
@@ -33,30 +32,7 @@ class PathFinderContainer extends React.Component {
         this.mouseAction = null;
         this.mouseEvent = this.mouseEvent.bind(this)
     }
-    animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder) {
-        for (let i = 0; i <= visitedNodesInOrder.length; i++) {
-            if (i === visitedNodesInOrder.length) {
-                setTimeout(() => {
-                    this.animateShortestPath(nodesInShortestPathOrder);
-                }, 10 * i);
-                return;
-            }
-            setTimeout(() => {
-                const node = visitedNodesInOrder[i];
-                document.getElementById(`node-${node.row}-${node.col}`).className =
-                    'node node-visited';
-            }, 10 * i);
-        }
-    }
-    animateShortestPath(nodesInShortestPathOrder) {
-        for (let i = 0; i < nodesInShortestPathOrder.length; i++) {
-            setTimeout(() => {
-                const node = nodesInShortestPathOrder[i];
-                document.getElementById(`node-${node.row}-${node.col}`).className =
-                    'node node-shortest-path';
-            }, 50 * i);
-        }
-    }
+
     handleInputChange = (event) => {
         const target = event.target;
         const value = target.type === 'checkbox' ? target.checked : target.value;
@@ -65,6 +41,8 @@ class PathFinderContainer extends React.Component {
             this.setAllowDiagonals()
         } else if (target.name === "canCrossCorners") {
             this.setCanCrossCorners()
+        } else if ( target.name === "autoRun") {
+            this.setRunOnUpdate()
         } else {
             this.setState({
                 [name]: value
@@ -252,18 +230,18 @@ class PathFinderContainer extends React.Component {
 
         return (
 
-            // <Container>
-            <Container fluid="false" style={{ position: "relative" }}>
-                <Row>
-                    <Col>
-                        <h1>Path Finding Algorithms</h1>
-                    </Col>
-                </Row>
-                <Controls handleChange={this.handleInputChange} algo={this.state.algo} heuristic={this.state.heuristic} canCrossCorners={this.state.canCrossCorners} allowDiagonals={this.state.allowDiagonals} algorithms={this.algos} heuristics={this.heuristics} options={this.options} />
-                <Row>
-                    <Col >
+            // <div className="container-fluid">
+            <div className="container-fluid" style={{ position: "relative" }}>
+                <div className="row">
+                    <div className="col">
+                        <h1 className="title">Path Finding Algorithms</h1>
+                    </div>
+                </div>
+                <Controls handleChange={this.handleInputChange} autoRun={this.state.autoRun} algo={this.state.algo} heuristic={this.state.heuristic} canCrossCorners={this.state.canCrossCorners} allowDiagonals={this.state.allowDiagonals} algorithms={this.algos} heuristics={this.heuristics} options={this.options} />
+                <div className="row">
+                    <div className="col" >
                         <div className="scroll-grid">
-                            <svg className={this.state.mouseActive ? 'mouseActive white-bg' : 'white-bg'} width={(this.state.grid.width * this.nodeSize) + 1} height={(this.state.grid.height * this.nodeSize) + 1}>
+                            <svg className={this.state.mouseActive ? 'mouseActive white-bg path-grid' : 'white-bg path-grid'} width={(this.state.grid.width * this.nodeSize) + 1} height={(this.state.grid.height * this.nodeSize) + 1}>
                                 {this.state.grid.nodes.map((row, rowIdx) => {
                                     return (
 
@@ -298,21 +276,23 @@ class PathFinderContainer extends React.Component {
                                 })}
                             </svg>
                         </div>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col>
-                        <button onClick={() => this.runAlgo()}>Click Bouton Pls</button>
-                        <button onClick={() => { this.removeWalls() }}>Remove Walls</button>
-                        <button onClick={() => { this.cleanGrid() }}>Reset Grid</button>
-                        <button className={this.state.autoRun ? "btn-active" : ""} onClick={() => { this.setRunOnUpdate() }}>Auto Run?</button>
-                    </Col>
-                </Row>
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col">
+                        <ul className="btn-group">
+                            <li><button className="large blue btn" onClick={() => this.runAlgo()}>Run Algorithm</button></li>
+                            <li><button className="large blue btn" onClick={() => { this.removeWalls() }}>Remove Walls</button></li>
+                            <li><button className="large blue btn" onClick={() => { this.cleanGrid() }}>Reset Grid</button></li>
+                        </ul>
+
+                    </div>
+                </div>
 
                 {/* <button className={this.state.allowDiagonals ? "btn-active" : ""} onClick={() => { this.setAllowDiagonals() }}>Allow Diagonals</button>
                 <button className={this.state.canCrossCorners ? "btn-active" : ""} onClick={() => { this.setCanCrossCorners() }}>Can Cross Corners?</button> */}
-            </Container>
-            // </Container>
+            </div>
+            // </div>
         );
     }
 

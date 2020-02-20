@@ -1,5 +1,3 @@
-import React from 'react';
-import Node from './Node'
 
 
 export default class Grid {
@@ -210,9 +208,7 @@ export default class Grid {
  * @return {Grid} Cloned grid.
  */
 clone = () => {
-    var i, j,
-
-        width = this.width,
+    let width = this.width,
         height = this.height,
         dupNodes = {...this.nodes},
 

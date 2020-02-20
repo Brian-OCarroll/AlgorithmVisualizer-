@@ -1,6 +1,4 @@
 import  React, {useState } from 'react';
-import { slide as Menu } from 'react-burger-menu';
-import { Tab, Nav, Col, Sonnet, Row } from 'react-bootstrap';
 import './Controls.css'
 
 const Controls = (props) => {
@@ -12,7 +10,7 @@ const Controls = (props) => {
     return (
         <>
         <div id="myNav" className={"overlay " + toggleClass}>
-        <a href="javascript:void(0)" className="closebtn" onClick={() => {handleToggle()}}>×</a>
+        <a role="button" className="closebtn pointer" onClick={() => {handleToggle()}}>×</a>
             <div id="mySidebar" className="overlay-content" >
   
                 <p>Select an Algorithm</p>
@@ -36,7 +34,7 @@ const Controls = (props) => {
                 {props.options.map((opt, i) => {
                     return (
 
-                            <label>
+                            <label key={i}>
                                 <span className="check-label" >{opt}</span>
                                 <input
                                     name={opt}
@@ -54,7 +52,7 @@ const Controls = (props) => {
             </div>
             
         </div>
-        <button class="openbtn" onClick={() => {handleToggle()}}>&#9776; Open Options</button>
+        <button className="open-btn open-btn--large btn-border" onClick={() => {handleToggle()}}>&#9776; Algorithm Modifiers</button>
         </>
     )
 }

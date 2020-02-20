@@ -48,7 +48,7 @@ class AStarFinder {
      * @return {Array<Array<number>>} The path, including both start and
      *     end positions.
      */
-    findPath =  (startNode, endNode, grid) => {
+    findPath =  (startNode, endNode, grid,) => {
         let openList = new BinaryHeap(function (node) {
             return node.f;
         }),
