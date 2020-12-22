@@ -3,7 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import Navigation from './components/Nav/Navigation';
 import PathFinderContainer from './components/pathFinderAlgos/PathFinderContainer';
-
+import Table from './components/sortingAlgos/table'
 function App() {
 
   return (
@@ -11,8 +11,8 @@ function App() {
 
       <Navigation />
       
-        <PathFinderContainer />
-      
+        {/* <PathFinderContainer /> */}
+        <Table />
     </div>
   );
 }
